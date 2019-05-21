@@ -1,0 +1,31 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head />
+
+<h:body>
+	
+
+			<table>
+				<tr>
+					<td style="width: 80px"><h:outputLabel value="Banco:" styleClass="campoLabelBold" /></td>
+					<td><p:inputText value="#{pessoasCadastroMB.pessoas.pessoasBancarios.numeroAgencia}" styleClass="campoInput" /></td>
+					<td><h:outputLabel value="Agência:" styleClass="campoLabelBold" /></td>
+					<td><p:inputText value="#{pessoasCadastroMB}" styleClass="campoInput" /></td>
+					<td><h:outputLabel value="Dig. Agência:" styleClass="campoLabelBold" /></td>
+					<td><p:inputText value="#{pessoasCadastroMB}" styleClass="campoInput" /></td>
+				</tr>
+				<tr>
+					<td style="width: 80px"><h:outputLabel value="C.Corrente:" styleClass="campoLabelBold" /></td>
+					<td><p:inputText value="#{pessoasCadastroMB}" styleClass="campoInput" /></td>
+					<td><h:outputLabel value="Dig. C.Corrente:" styleClass="campoLabelBold" /></td>
+					<td><p:inputText value="#{pessoasCadastroMB}" styleClass="campoInput" /></td>
+				</tr>
+			</table>
+	
+</h:body>
+
+</html>

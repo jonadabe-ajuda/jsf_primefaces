@@ -1,0 +1,299 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui" >
+    <h:head>
+        <title>Cadastro Plano de Contas</title>
+        
+        <style>
+		   .DataTable table * {
+		       border: none !important;
+		   }
+          .ui-datatable-tr, .ui-datatable-td  {
+          	 border: none !important; 
+          }
+          .ui-datatable-subtable-header {
+          	 background: #ffffff !important;
+          }     
+          .ui-datatable-subtable {
+          	 border: none !important; 
+          }        
+          .mandatoryIndicator { background:url("#{resource['primefaces:treetable/images/toggle-expand-dark.png']}") 
+              no-repeat left center; padding-left:1em; width:50px}
+        </style>
+    </h:head>
+    <h:body>
+
+    <h:form id="fPlanoContas"> 
+    <p:outputPanel id="opTreetable">
+      	<table>
+  			<tr>
+  				<td>
+  					<h:outputText value="Tipo plano de contas gerencial." styleClass="campoTitulo"/>
+  				</td>
+  			</tr>
+  		</table>
+		<p:toolbar>
+				<p:toolbarGroup align="left">
+					<h:outputText value="Filtros: " styleClass="campoLabel"/>
+					<p:commandButton id="bGeralFiltro" 
+								   action="#{orcaCustoPlanoContas.setSelectPlanoContas()}"	
+				      		       icon="ui-icon-zoomin" title="Geral" value="Geral"
+				      		       update="treetable">
+				      	<f:setPropertyActionListener value="#{null}" target="#{orcaCustoPlanoContas.planoContasTree.idFinanPlanoContaTipo}"/>	       
+				    </p:commandButton>
+				    
+					<ui:repeat value="#{orcaCustoPlanoContas.selectPlanoContaTipos}" var="grupoPlanoContas" varStatus="status">
+						<p:commandButton id="bfiltro#{grupoPlanoContas.descricao}"
+						 				 action="#{orcaCustoPlanoContas.setSelectPlanoContas()}"
+					      		       icon="ui-icon-zoomin" title="#{grupoPlanoContas.descricao}" value="#{grupoPlanoContas.descricao}"
+					      		       update=":conteudoOrcaCusto:fPlanoContas:treetable">
+					      	<f:setPropertyActionListener value="#{grupoPlanoContas.codigo}" target="#{orcaCustoPlanoContas.planoContasTree.idFinanPlanoContaTipo}"/>	       
+					    </p:commandButton>						
+					</ui:repeat>
+  		       						
+				      		       				      		       
+				</p:toolbarGroup>
+				<p:toolbarGroup align="right">
+					<p:commandButton id="bExpandir" 
+									 action="#{orcaCustoPlanoContas.planoContasTree.expandTree}"
+				      		         icon="ui-icon-arrow-4-diag" title="Expandir" value="Expandir"
+				      		         update="treetable"/>
+					<p:commandButton id="bSintetizar"
+									 action="#{orcaCustoPlanoContas.planoContasTree.collapseTree}" 
+				      		         icon="ui-icon-shuffle" title="Sintetizar" value="Sintetizar"
+				      		         update="treetable"/>								      		       				
+				</p:toolbarGroup>
+		</p:toolbar>		
+
+		    <p:treeTable id="treetable" value="#{orcaCustoPlanoContas.planoContasTree.root}" var="planoConta"
+		                  style="width:100%;" selectionMode="single" scrollable="true" scrollHeight="450"
+		                  selection="#{orcaCustoPlanoContas.planoContasTree.selectedNode}">  
+		  
+	        	<p:column style="width:90%">  
+		            <h:outputText value="#{planoConta.descNivel}  #{planoConta.codigo} - #{planoConta.descricao} " />  
+		        </p:column>  
+		  	     <p:ajax event="select" listener="#{orcaCustoPlanoContas.mudarSelectPlanoContas()}" process="@this,treetable"
+			             update=":conteudoOrcaCusto:fPlanoContas:opPlanoContas" oncomplete="PF('dlPlanoContas').show()" />
+						          
+			                
+		        <!--p:column style="width:10%">  
+		             <p:commandLink action="#{orcaCustoPlanoContas.mudarSelectPlanoContas()}" oncomplete="PF('dlPlanoContas').show()" title="View Detail" 
+		                            update=":conteudoOrcaCusto:fPlanoContas:opPlanoContas" styleClass="ui-icon ui-icon-search"
+		                            process="@this,treetable">
+		     
+		                                                                                        
+		             </p:commandLink> 
+		                 
+		        </p:column-->  
+		    </p:treeTable>
+      
+   	</p:outputPanel>
+   	<p:dialog id="modalDialog" header="Alteraçao plano de contas" widgetVar="dlPlanoContas" modal="true" height="100" width="100%"
+	          position="top"> 
+	    <p:outputPanel id="opPlanoContas">       
+	        
+	          <table>
+	          
+	          	<tr>
+	          	
+	          		<td width="10%">
+	          			<h:outputLabel value="Nivel" 
+	          			               style="font-size: 10px; font-weight: bold"
+	          			              rendered="#{orcaCustoPlanoContas.nivelNovo != 0 or !orcaCustoPlanoContas.showNovo}"/>
+	          		</td>	          	
+	          		<td width="10%">
+	          			<h:outputLabel value="Codigo" 
+	          			               style="font-size: 10px; font-weight: bold"
+	          			              rendered="#{orcaCustoPlanoContas.nivelNovo != 0 or !orcaCustoPlanoContas.showNovo}"/>
+	          		</td>
+	          		
+	          		<td width="25%">
+	          			<h:outputLabel value="Descrição" 
+	          			               style="font-size: 10px; font-weight: bold"
+	          			              rendered="#{orcaCustoPlanoContas.nivelNovo != 0 or !orcaCustoPlanoContas.showNovo}"/>
+	          		</td>
+	          		
+	          		<td width="15%">
+	          			<h:outputLabel value="Cod.Contabil" 
+	          			               style="font-size: 10px; font-weight: bold"
+	          			              rendered="#{orcaCustoPlanoContas.nivelNovo != 0 or !orcaCustoPlanoContas.showNovo}"/>
+	          		</td>	          		
+	          		
+	          		<td width="40%">
+   			          	<p:spacer width="5px"/>	 		            		       
+	          		</td>
+	          	</tr>	          
+	          	
+	          	<tr>
+	          	
+	          		<td width="10%">
+	          			<h:outputLabel value="#{orcaCustoPlanoContas.descNivel}" 
+	          			               style="font-size: 10px; font-weight: bold"
+	          			              rendered="#{orcaCustoPlanoContas.nivelNovo != 0 or !orcaCustoPlanoContas.showNovo}"/>
+	          		</td>	          	
+	          		<td width="10%">
+	          			<h:inputText value="#{orcaCustoPlanoContas.codigo}" 
+	          			              style="font-size: 10px" size="15" readonly="true"
+	          			              rendered="#{orcaCustoPlanoContas.nivelNovo != 0 or !orcaCustoPlanoContas.showNovo}"/>
+	          		</td>
+	          		
+	          		<td width="25%">
+		    		 	<h:inputText value="#{orcaCustoPlanoContas.descricao}"       
+		    		 	             style="font-size: 10px" size="50"
+	          			              rendered="#{orcaCustoPlanoContas.nivelNovo != 0 or !orcaCustoPlanoContas.showNovo}"/>	
+		    		 	               
+
+	          		</td>
+	          		
+	          		<td width="15%">
+		    		 	<h:inputText value="#{orcaCustoPlanoContas.idContabilidade}"       
+		    		 	             style="font-size: 10px" size="10" styleClass="campoInputValor" onkeypress="validateInput('[0-9]*')"
+	          			              rendered="#{orcaCustoPlanoContas.nivelNovo != 0 or !orcaCustoPlanoContas.showNovo}"/>	
+		    		 	               
+
+	          		</td>	          		
+	          		
+	          		<td width="40%">
+   
+			          	<p:commandButton id="iconSalvarPlanoContas" action="#{orcaCustoPlanoContas.alterarPlanoConta()}"
+			            		       icon="ui-icon-disk" value="Salvar" title="Salvar" process="@this,opPlanoContas"  
+			            		       update=":conteudoOrcaCusto:fPlanoContas:treetable"
+			            		       rendered="#{orcaCustoPlanoContas.showAlterar}" oncomplete="PF('dlPlanoContas').hide()" />
+			            		       		            		       
+		            	<p:commandButton id="iconCancelarPlanoContas"  action="#{orcaCustoPlanoContas.desativarPlanoConta()}"
+		            		       icon="ui-icon-trash" value="Desabiltar" title="Desabilitar" process="@this"  update=":conteudoOrcaCusto:fPlanoContas:treetable"
+		            		       rendered="#{orcaCustoPlanoContas.showCancelar}" oncomplete="PF('dlPlanoContas').hide()" >
+							<p:confirm header="Confirmation" message="Caso esse plano de conta, tiver niveis abaixo, também serão desabilitados. Confirma?" icon="ui-icon-alert" />		            		       
+		            	</p:commandButton>	                 		
+ 		       
+		            	<p:commandButton id="iconAdicionarPlanoContas"  action="#{orcaCustoPlanoContas.adicionarPlanoConta()}"
+		            		       icon="ui-icon-plus" value="Adicionar novo" title="Adicionar novo" process="@this"  update=":conteudoOrcaCusto:fPlanoContas:opPlanoContas"
+		            		       rendered="#{orcaCustoPlanoContas.showAdicionar}"/>
+		            		       
+		            	<p:commandButton id="iconVoltarPlanoContas" icon="ui-icon-arrowreturnthick-1-w" 
+		            	                 value="Voltar" title="Votlar" onclick="PF('dlPlanoContas').hide()"/>		            		       
+			            		       
+		            		       
+	          		</td>
+	          	</tr>
+
+	          
+	          </table>
+	          
+	          <table>
+	          
+	          	<tr>
+	          	
+	          		<td width="10%">
+	          			<h:outputLabel value="Nivel" 
+	          			               style="font-size: 10px; font-weight: bold"
+	          			               rendered="#{orcaCustoPlanoContas.showNovo}"/>
+	          		</td>	          	
+	          		<td width="10%">
+	          			<h:outputLabel value="Codigo" 
+	          			               style="font-size: 10px; font-weight: bold"
+	          			               rendered="#{orcaCustoPlanoContas.showNovo}"/>
+	          		</td>
+	          		
+	          		<td width="15%">
+	          			<h:outputLabel value="Descrição" 
+	          			               style="font-size: 10px; font-weight: bold"
+	          			               rendered="#{orcaCustoPlanoContas.showNovo}"/>
+
+	          		</td>
+	          		
+	          		<td width="10%">
+	          			<h:outputLabel value="Cod.Contabil" 
+	          			               style="font-size: 10px; font-weight: bold"
+	          			               rendered="#{orcaCustoPlanoContas.showNovo}"/>
+
+	          		</td>	          		
+	          		
+	          		<td width="30%">
+						<p:spacer width="5px"/>	 
+	          		</td>		          		
+	          		
+	          		<td width="25%">
+   
+			          	<p:spacer width="5px"/>	 	
+	
+	          		</td>
+	          	</tr>	          
+	          	
+	          	<tr>
+	          	
+	          		<td width="10%">
+	          			<h:outputLabel value="#{orcaCustoPlanoContas.descNivelNovo}" 
+	          			               style="font-size: 10px; font-weight: bold"
+	          			               rendered="#{orcaCustoPlanoContas.showNovo}"/>
+	          		</td>	          	
+	          		<td width="10%">
+	          			<h:inputText value="#{orcaCustoPlanoContas.codigoNovo}" 
+	          			              style="font-size: 10px" size="5"
+	          			              rendered="#{orcaCustoPlanoContas.showNovo}"
+	          			              disabled="#{orcaCustoPlanoContas.nivelNovo != 0}"
+	          			              readonly="true"/>
+	          		</td>
+	          		
+	          		<td width="15%">
+		    		 	<h:inputText value="#{orcaCustoPlanoContas.descricaoNovo}"       
+		    		 	             style="font-size: 10px" size="50"
+		    		 	             rendered="#{orcaCustoPlanoContas.showNovo}"/>	
+
+	          		</td>
+	          		
+	          		<td width="10%">
+		    		 	<h:inputText value="#{orcaCustoPlanoContas.idContabilidadeNovo}"       
+		    		 	             style="font-size: 10px" size="10"
+		    		 	             rendered="#{orcaCustoPlanoContas.showNovo}"/>	
+
+	          		</td>	          		
+	          		
+	          		<td width="30%">
+						<h:selectOneRadio id="tipoCentroCusto" value="#{orcaCustoPlanoContas.tipoCentroCusto}"
+										  style="font-size: 10px; width: 150px"
+										  rendered="#{orcaCustoPlanoContas.showNovo}">
+							<f:selectItem itemLabel="Sintético" itemValue="2"/>								  
+							<f:selectItem itemLabel="Analítica" itemValue="1"/>
+							
+							
+						</h:selectOneRadio>	 
+	          		</td>		          		
+	          		
+	          		<td width="25%">
+   
+			          	<p:commandButton id="iconSalvarNovoPlanoContas" action="#{orcaCustoPlanoContas.salvarPlanoConta()}"
+			            		       icon="ui-icon-disk" value="Salvar" title="Salvar" process="@this,opPlanoContas" 
+			            		       update=":conteudoOrcaCusto:fPlanoContas:opPlanoContas,:conteudoOrcaCusto:fPlanoContas:treetable"
+			            		       rendered="#{orcaCustoPlanoContas.showNovo}"
+			            		       oncomplete="PF('dlPlanoContas').hide()" />	
+	
+	          		</td>
+	          	</tr>
+
+	          
+	          </table>	
+	          
+	          <table style="valign='bottom'">
+	          	<tr>
+	          		<td>
+         		
+	          		</td>
+	          	</tr>
+          	
+	          </table>          
+	     		     	 
+    	</p:outputPanel>
+    	<f:facet name="footer">
+    			<h:outputLabel value="Sintético: Agrupamento / totalizadores." style="font-size: 10px; font-weight: bold"/>
+    			<h:outputLabel value="Analítico: Contas que podem receber movimento." style="font-size: 10px; font-weight: bold"/>	 
+    	</f:facet> 	 	        
+	</p:dialog>  	
+ 	</h:form> 
+    </h:body>
+</html>
+

@@ -1,0 +1,1251 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="http://java.sun.com/jsf/facelets"
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Proforma</title>
+        
+        <style>
+        .DataTable table * {
+       border: none !important;
+   }
+          .ui-datatable-tr, .ui-datatable-td  {
+          	 border: none !important; 
+          }
+          .ui-datatable-subtable-header {
+          	 background: #ffffff !important;
+          }     
+          .ui-datatable-subtable {
+          	 border: none !important; 
+          }
+          
+          .ui-tabs .ui-tabs-nav li{
+             float:right!important;
+           }
+                         
+        </style>
+        
+   </h:head>
+    <h:body>
+    <h:form id="fPedVendasExp" >
+    	<p:outputPanel id="opProcuraVendas" >
+			<table style="width: 900px">
+				<tr>
+				 	<td width="80px">
+				 		<h:outputLabel value="Draft" styleClass="campoObrigatorio" style="font-size: 10px" rendered="#{vendasMB.pedidos.tipo != 'P'.charAt(0)}"/>
+				 		<h:outputLabel value="Proforma" styleClass="campoObrigatorio" style="font-size: 10px" rendered="#{vendasMB.pedidos.tipo == 'P'.charAt(0)}"/>
+				 	</td>
+				 	<td>	
+				 		<p:inputText id="pedVenNumPedido" value="#{vendasMB.numeroPedido}" size="10"
+											styleClass="campoInput"  readonly="true"/>
+											   											
+	  					<p:commandButton widgetVar="btListaPedVendas" title="Listar pedidos exportação" action="#{vendasMB.getOpcao()}"
+					   			         value="Listar pedidos exportação" onclick="PF('modalProcessar').show()"
+					   			         update=":formListPedVEndas:opListPedVendas" 
+					   			         oncomplete="PF('wdlListPedVendas').show(),PF('modalProcessar').hide()">
+		   			         <f:setPropertyActionListener value="0" target="#{vendasMB.numeroPedido}"/>
+		   			         <f:setPropertyActionListener value="1" target="#{vendasMB.tipoVendas}"/>	   			         
+		   			    </p:commandButton>     											
+	
+				 	</td>	
+			 			 	
+				 	<td>
+				 		<h:outputLabel value="Data emissão: " styleClass="campoObrigatorio" style="font-size: 10px"/>
+				 	</td>
+				 	<td>
+						<h:outputLabel id="pedVendDtEmi" value="#{vendasMB.pedidos.dataMovimento}" styleClass="campoLabel">
+								<f:convertDateTime pattern="dd/MM/yyyy" /> 		             
+					    </h:outputLabel>						   		    
+				 	</td>		
+				 	
+				 	<td>
+				 		<h:outputLabel value="Tipo:" styleClass="campoObrigatorio" style="font-size: 10px"/>
+				 	</td>
+				 	<td>
+				 		<p:selectOneRadio id="boxTipoPedido" value="#{vendasMB.pedidos.tipo}" styleClass="selectOneMenu" style="width: 150px"
+				 		                  disabled="#{vendasMB.pedidos.tipo == 'P'.charAt(0)}" rendered="#{vendasMB.pedidos.IDPedido != null}">
+							<f:selectItem itemLabel="Draft" itemValue="O"  />
+							<f:selectItem itemLabel="Proforma" itemValue="P" />
+							<p:ajax event="change" listener="#{vendasMB.mudarPedidoTipo}"/>
+						</p:selectOneRadio>
+						<h:outputLabel value="Draft" styleClass="campoObrigatorio" style="font-size: 10px" rendered="#{vendasMB.pedidos.IDPedido == null}"/>
+					</td>
+				 	<td>
+				 		<h:outputLabel value="Data Proforma: " styleClass="campoLabel" style="font-size: 10px" rendered="#{vendasMB.pedidos.tipo == 'P'.charAt(0)}"/>
+				 	</td>
+				 	<td>
+						<h:outputLabel value="#{vendasMB.pedidos.dataPedido}" styleClass="campoLabel" rendered="#{vendasMB.pedidos.tipo == 'P'.charAt(0)}">
+								<f:convertDateTime pattern="dd/MM/yyyy" /> 		             
+					    </h:outputLabel>						   		    
+				 	</td>						
+				</tr>	
+									
+			</table>    
+		</p:outputPanel>
+		
+	     <p:tabView id="tabPedidos" effect="fade" effectDuration="normal" style="width:1100px;"
+	                 activeIndex="4" onTabChange="">  
+	                 
+	        <p:ajax event="tabChange" listener="#{vendasMB.somarPedido()}" update=":conteudoNegocios:fPedVendasExp:tabPedidos:opPedVendProdFinan"/>         
+	        <p:tab title="Financeiro" >  
+	        	<p:outputPanel id="opPedVendProdFinan">
+	        		<p:panel id="pVenProdFinan">
+	        		    <!-- 
+						<table>
+							<tr>
+								<td width="80px">
+									<h:outputLabel value="V.Total:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenVTotal" value="#{vendasMB.valorTotal}" size="10"
+														styleClass="campoInput"  readonly="true"/>
+							   	</td>
+								<td>
+									<h:outputLabel value="V.Saldo:" style="font-size: 10px" rendered="#{financeiroMB.valorSaldoParcelas > 0}"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenVSaldoTotal" value="#{financeiroMB.valorSaldoParcelas}" size="10"
+														styleClass="campoInput"  readonly="true" rendered="#{financeiroMB.valorSaldoParcelas > 0}"/>
+							   	</td>	
+							   					   	
+								<td>
+									<h:outputLabel value="Forma pagamento:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+									<p:selectOneMenu id="boxPedFormaPagto" value="#{financeiroMB.formaPagtoSelected}" converter="formasPagtoConverter"
+					                             	 style="width: 150px; font-size: 10px; text-align:left">
+								 		<f:selectItems value="#{tabelasComumMB.selectFormasPagto}" var="formaPagto" itemLabel="#{formaPagto.descricao}" itemValue="#{formaPagto}"/>
+							 		</p:selectOneMenu>
+							   	</td>
+							   
+							   <td>
+									<h:outputLabel value="V.Parcela:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenParcela" value="#{financeiroMB.valorParcelas}" size="10"
+														styleClass="campoInput"/>
+							   	</td>							   	
+								<td>
+									<h:outputLabel value="Vencimento:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:calendar id="pedVendDtVenc" value="#{financeiroMB.dataVencimento}"  
+												style="font-size: 10px;" size="10" showOn="button"
+									   		    pattern="dd/MM/yyyy" />			   	
+							   	</td>			   	
+								<td>
+									<h:outputLabel value="No parcela:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenParc" value="#{financeiroMB.numeroParcelas}" size="2"
+														styleClass="campoInput" />
+							   	</td>
+								<td>
+									<h:outputLabel value="Dias vencimento:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenDias" value="#{financeiroMB.diasVencimento}" size="2"
+														styleClass="campoInput"/>
+							   	</td>							   	
+			   			   
+							</tr> 		
+						</table>	
+						<table>
+							<tr>
+								<td width="80px">
+									<h:outputLabel value="Detalhes parcela:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenDescParc" value="#{financeiroMB.descParcela}" size="70"
+														styleClass="campoInput"/>
+							   	</td>
+	
+								<td>
+						  			<p:commandLink  title="Incluir pagamento" 
+						        			         styleClass="ui-icon ui-icon-circle-plus" 
+						        			         update="opPedVendProdFinan">
+						        		<f:setPropertyActionListener  value="#{vendasMB.valorTotal}" target="#{financeiroMB.valorTotal}"/>	         
+						        	</p:commandLink>
+								</td>
+							   				   	
+							</tr> 		
+						</table>
+						-->
+						<table>
+							<tr>
+								<td>
+									<p:selectOneMenu id="boxCondPagto" value="#{financeiroMB.condPagtoTipoSelected}" converter="condPagamentoConverter"
+								                 	 style="width: 400px; font-size: 10px; text-align:left" var="condPagto"
+								                 	 disabled="#{not empty financeiroMB.listaMovPagRec}">
+										<f:selectItems value="#{cadastroCondPagtoMB.listaCondPagtoTipoAtivo}" var="condPagto" itemLabel="#{condPagto.descricao} - #{condPagto.descTipo}" itemValue="#{condPagto}"/>
+										<p:ajax event="change" update="boxCondPagto"/>
+										
+							 			<p:column style="width:50%">
+							                <h:outputText value="#{condPagto.descricao}" />
+							            </p:column>
+							 
+							            <p:column>
+							            	<h:outputText value="#{condPagto.descTipo}" />
+							            </p:column>										
+										
+									</p:selectOneMenu>								
+								</td>
+								<td>
+									<h:outputLabel value="Dia vencto:" style="font-size: 10px"/>
+								</td>
+								<td>
+						  			<p:selectOneMenu id="solDiaVencto" value="#{financeiroMB.diasVencimento}"
+						                             style="width: 70px; font-size: 10px; text-align:left"
+						                             disabled="#{not empty financeiroMB.listaMovPagRec}"> 
+							            <f:selectItems value="#{tabelasComumMB.selectDiasMes}"/>
+						        	</p:selectOneMenu> 														
+								</td>
+								<td>
+									 <p:commandButton  id="btParcAut" action="#{financeiroMB.addParcelasAutomatico()}" icon="ui-icon-circle-plus" value="Criar parcelas"
+							                            update=":conteudoNegocios:fPedVendasExp:tabPedidos:opPedVendProdFinan"
+							                            rendered="#{empty financeiroMB.listaMovPagRec}">
+										<f:setPropertyActionListener value="#{vendasMB.valorTotal}" target="#{financeiroMB.valorSaldoParcelas}"/>	
+										<f:setPropertyActionListener value="#{vendasMB.listaPedItensEnt}" target="#{financeiroMB.listaPedItensEnt}"/>
+										<f:setPropertyActionListener value="#{financeiroMB.condPagtoTipoSelected}" target="#{vendasMB.pedidos.condPagto}"/>						                            
+							         </p:commandButton>                    								
+								</td>
+							</tr>
+						</table>
+ 
+					</p:panel>			
+				    <p:dataTable id="dtPedVendParc" var="item" value="#{financeiroMB.listaMovPagRec}"  rows="10"  
+				                 paginator="true"  paginatorAlwaysVisible="no" paginatorPosition="bottom" rowIndexVar="linha"
+				                 emptyMessage="Sem registro." tableStyle="font-size: 10px; width:400px;" style="width:800px;"> 
+			
+
+				        <p:column headerText="Parcela" style="width:10%">  
+				   			<h:outputLabel  value="#{item.numeroParcela}"/> 
+				        </p:column>			
+			
+				        <p:column headerText="Dt.Vencimento" style="width:30%">  
+				   			<h:outputLabel  value="#{item.dataVencimento}">
+								<f:convertDateTime pattern="dd/MM/yyyy" /> 		             
+					        </h:outputLabel>					            
+				        </p:column>
+				        
+				        <p:column headerText="Dt.Pagamento" style="width:30%">  
+				   			<h:outputLabel  value="#{item.dataBaixa}">
+								<f:convertDateTime pattern="dd/MM/yyyy" /> 		             
+					        </h:outputLabel>
+				        </p:column>  	        
+			
+				        <p:column headerText="Valor" style="width:30%">  
+							<h:outputText value="#{item.valorMovimento}">
+				                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+				            </h:outputText>				            
+				        </p:column>  	  
+					  
+  
+				        <f:facet name="footer">  
+				           <p:commandButton action="#{financeiroMB.removerParcelasTotal}" icon="ui-icon-closethick" value="Remover parcelas"
+				                            update=":conteudoNegocios:fPedVendasExp:tabPedidos:opPedVendProdFinan">  
+				           </p:commandButton>			
+				        </f:facet>  	  
+
+				    </p:dataTable>		
+				    	
+					<table>
+				    	<tr>
+			    			<td>
+								<h:outputLabel value="Forma pagamento: " style="font-size: 10px"/>
+							</td>
+						   	<td>
+								<p:selectOneMenu id="boxPedFormaPagto" value="#{vendasMB.formaPagtoSelected}" converter="formasPagtoConverter"
+				                             	 style="width: 150px; font-size: 10px; text-align:left">
+							 		<f:selectItems value="#{tabelasComumMB.selectFormasPagto}" var="formaPagto" itemLabel="#{formaPagto.descricao}" itemValue="#{formaPagto}"/>
+							 		<p:ajax event="change" update="boxPedFormaPagto"/>
+						 		</p:selectOneMenu>
+						   	</td>				    	
+				    	</tr>
+				    </table>
+					<p:separator/>   
+					<table style="width: 500px">
+						<tr>
+							<td width="120px">
+								<h:outputLabel value="Valor deposito:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+						 		<p:inputText id="pedVenVDeposito" value="#{vendasMB.pedidos.valorDeposito}" size="15"
+											 styleClass="campoInputValor" onkeypress="validateInput('[0-9]*')">
+				                  	<f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+				            	</p:inputText>
+						   	</td>						  	
+			  			</tr>	
+					</table>	
+					<table style="width: 500px">
+						<tr>
+							<td width="120px">
+								<h:outputLabel value="Valor crédito:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+						 		<p:inputText id="pedVenVCredito" value="#{vendasMB.valorClienteCredAtual}" size="15"
+													styleClass="campoInputValor" readonly="true">
+				                  	<f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+				            	</p:inputText>
+						   	</td>						  	
+			  			</tr>	
+					</table>
+					<table style="width: 500px">
+						<tr>
+							<td width="120px">
+								<h:outputLabel value="Total itens c/descontos:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+						 		<p:inputText id="pedVenVSDescontos" value="#{vendasMB.valorTotalItens}" size="15"
+													styleClass="campoInputValor" readonly="true">
+				                  	<f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+				            	</p:inputText>				            
+						   	</td>						  	
+			  			</tr>	
+					</table>
+					<table style="width: 500px">
+						<tr>
+							<td width="120px">
+								<h:outputLabel value="Total descontos:" style="font-size: 10px"/>
+							</td>
+						   	<td width="120px">
+						 		<p:inputText id="pedVenVDescontos" value="#{vendasMB.valorTotalDesc}" size="15"
+													styleClass="campoInputValor" readonly="true">
+				                  	<f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+				            	</p:inputText>
+						   	</td>
+						   	<td>
+								<h:outputLabel value="(Comissões+Frete)" style="font-size: 10px"/>
+							</td>
+			  			</tr>	
+					</table>	
+					<table style="width: 500px">
+						<tr>
+							<td width="120px">
+								<h:outputLabel value="Valor Subst.Trib.:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+						 		<p:inputText id="pedVenVSubTrib" value="0.00" size="15"
+													styleClass="campoInputValor" readonly="true">
+				                  	<f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+				            	</p:inputText>
+						   	</td>						  	
+			  			</tr>	
+					</table>														
+					<table style="width: 500px">
+						<tr>
+							<td width="120px">
+								<h:outputLabel value="Valor Suframa:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+						 		<p:inputText id="pedVenVSuframa" value="0.00" size="15"
+													styleClass="campoInputValor" readonly="true">
+				                  	<f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+				            	</p:inputText>
+						   	</td>						  	
+			  			</tr>	
+					</table>
+					<table style="width: 500px">
+						<tr>
+							<td width="120px">
+								<h:outputLabel value="Valor Dif.Aliquota:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+						 		<p:inputText id="pedVenVDifAliq" value="0.00" size="15"
+													styleClass="campoInputValor" readonly="true">
+				                  	<f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+				            	</p:inputText>
+						   	</td>						  	
+			  			</tr>	
+					</table>
+					<table style="width: 500px">
+						<tr>
+							<td width="120px">
+								<h:outputLabel value="Total pedido:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+						 		<p:inputText id="pedVenVTotPedido" value="#{vendasMB.valorTotal}" size="15"
+													styleClass="campoInputValor" readonly="true">
+				                  	<f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+				            	</p:inputText>
+						   	</td>						  	
+			  			</tr>	
+					</table>					
+				</p:outputPanel>
+	        </p:tab>   
+	                 
+	        <p:tab title="Transporte" >  
+	        
+				<table style="width: 850px">
+					<tr>
+				  		<td  width="80px">
+				  			<h:outputLabel value="Transportadora:" style="font-size: 10px"/>
+				  		</td>
+				  		<td>
+				 
+							<p:autoComplete id="pedVenTransp" minQueryLength="1"   
+				                 				value="#{vendasMB.transpSelected}" effect="fade"  
+				                 				var="pe" itemLabel="#{pe.pessoas.nome}" itemValue="#{pe}" 
+				                 				completeMethod="#{pessoasCadastroMB.completePessoasTransportadora}" converter="pessoaTipoTransportadoraConverter"
+				                 				styleClass="campoInput" size="50" >
+				                 		
+				                 	<p:ajax event="itemSelect"  update="pedVenTransp"/>
+				               		<p:column>
+				                 			#{pe.pessoas.nome}r
+				             		</p:column>		
+				             		 
+				            </p:autoComplete>
+
+				  		</td>
+		  			</tr>	
+				</table>
+				<table style="width: 850px">
+					<tr>
+				  		<td  width="80px">
+				  			<h:outputLabel value="Tipo Frete:" style="font-size: 10px"/>
+				  		</td>
+				  		<td>
+							<p:selectOneMenu id="boxPedTpFrete" value="#{vendasMB.tpFreteSelected}"
+								                 style="width: 200px" styleClass="selectOneMenu" converter="tiposFreteConverter">
+										<f:selectItems value="#{tabelasComumMB.selectTipoFretes}" var="tpFrete" itemLabel="#{tpFrete.descricao}" itemValue="#{tpFrete}"/>
+							</p:selectOneMenu>				            
+
+				  		</td>
+		  			</tr>	
+				</table>	
+							
+				<table style="width: 850px">
+					<tr>
+						<td width="80px">
+							<h:outputLabel value="Valor frete:" style="font-size: 10px"/>
+						</td>
+					   	<td>
+					 		<p:inputText id="pedVenVFrete" value="#{vendasMB.pedidos.valorFrete}" size="15"
+										 styleClass="campoInputValor" onkeypress="validateInput('[0-9]*')">
+									<p:ajax event="change" listener="#{vendasMB.setarValorFrete()}" update="opPedVendProdFinan"/>												
+							</p:inputText>					
+					   	</td>						  	
+		  			</tr>	
+				</table>
+		
+				<p:panel id="pPedVendLocalEnt" style="width:600px;">
+				    <f:facet name="header">
+				    	<h:outputLabel value="Local de entrega:" style="font-size: 10px"/>
+				    </f:facet>
+					<table style="width: 550px">
+						<tr>
+					  		<td width="80px">
+					  			<h:outputLabel value="Endereços:" style="font-size: 10px"/>
+					  		</td>
+					  		<td>
+								<p:selectOneMenu id="boxPedEndereco" value="#{vendasMB.pedidos.enderecoEntrega}" var="pEnd"
+									                 style="width:200px" styleClass="selectOneMenu" converter="pessoaEnderecoConverter">
+											<f:selectItems value="#{vendasMB.selectEnderecoEntrega}" var="pEnd" itemLabel="#{pEnd.endereco}" itemValue="#{pEnd}"/>
+										<p:column>
+							                <h:outputText value="#{pEnd.endereco}" />
+							            </p:column>
+							 
+							            <p:column>
+							                <h:outputText value="#{pEnd.obs}" />
+							            </p:column>											
+								</p:selectOneMenu>			            
+					  		</td>
+					  		<td>
+					  			<h:outputLabel value="Apenas endereço tipo entrega" style="font-size: 10px"/>
+					  		</td>					  		
+			  			</tr>	
+					</table>	
+				</p:panel>
+
+	        </p:tab>         
+	          
+	        <p:tab title="Entregas">   
+	        	<p:outputPanel id="opPedVendProdEntregas">
+					<tr>
+						<td  width="120px">
+							<h:outputLabel value="Pedidos com saldo cancelados: " style="font-size: 11px; color:red" rendered="#{vendasMB.pedidos.cancelarSaldo==1}"/>
+						</td>
+						<td  width="120px">
+							<h:outputLabel value="Data:" style="font-size: 11px; color:red" rendered="#{vendasMB.pedidos.cancelarSaldo==1}"/> 
+						</td>
+						<td>
+							<h:outputLabel value="#{vendasMB.pedidos.dataCancelarSaldo}" style="font-size: 11px; color:red" rendered="#{vendasMB.pedidos.cancelarSaldo==1}">									
+								<f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="#{menuPrincipal.timeZone}"/> 		             
+  					        </h:outputLabel>					            
+
+						</td>
+						<td   width="120px">
+							<h:outputLabel value="Usuário:" style="font-size: 11px; color:red" rendered="#{vendasMB.pedidos.cancelarSaldo==1}"/>
+						</td>
+						<td>
+							<h:outputLabel value="#{vendasMB.pedidos.pessoaCancSaldo.nome}" style="font-size: 11px; color:red" rendered="#{vendasMB.pedidos.cancelarSaldo==1}"/>
+						</td>					
+					</tr>	        	
+				  <p:dataTable id="dtPedVendProdItenEnt" widgetVar="wdPedVendProdItenEnt" value="#{vendasMB.dataModelPedidoItens}"  
+				                 selection="#{vendasMB.pedidosItemEntSelected}"  var="item"  rows="10"  selectionMode="single"
+				                 paginator="true"  paginatorAlwaysVisible="no" paginatorPosition="bottom" 
+				                 emptyMessage="Sem registro." tableStyle="font-size: 10px; width:600px;"> 
+				 
+				  
+				        <p:ajax event="rowSelect" listener="#{vendasMB.setarPedidoItem()}"
+				                update=":conteudoNegocios:fPedVendasExp:tabPedidos:opPedVendProdEntregas" />  
+				                        
+				        <p:ajax event="rowUnselect" listener="#{vendasMB.setarPedidoItem()}"
+				                update=":conteudoNegocios:fPedVendasExp:tabPedidos:opPedVendProdEntregas" />                          
+				  
+				        <p:column headerText="Qtde" style="width:10%">  
+				            #{item.quantidade}
+				        </p:column>  
+				        <p:column headerText="Qtde Entregue" style="width:10%">  
+				            #{item.qtdeEntregue}
+				        </p:column>
+				        <p:column headerText="Qtde Saldo" style="width:10%">  
+				            #{item.qtdeSaldo}
+				        </p:column>				        				        
+			
+				        <p:column headerText="Descrição" style="width:90%">  
+				            #{item.descricaoProduto}  
+				        </p:column>       
+				 
+				    </p:dataTable>
+				    <p:panel id="pVenProdItenEnt" rendered="#{vendasMB.qtdeSaldoEntrega > 0}">
+						<table>
+							<tr>
+								<td width="80px">
+									<h:outputLabel value="Produto:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenProdEnt" value="#{vendasMB.descItemEntrega}" size="40"
+														styleClass="campoInputValor"  readonly="true"/>
+							   	</td>	
+								<td>
+									<h:outputLabel value="Qtde:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenQtdeItemEnt" value="#{vendasMB.qtdeItemEntrega}" size="5"
+														styleClass="campoInputValor"  readonly="true"/>
+							   	</td>
+								<td>
+									<h:outputLabel value="Saldo:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenQtdeSaldoEnt" value="#{vendasMB.qtdeSaldoEntrega}" size="5"
+														styleClass="campoInputValor"  readonly="true"/>
+							   	</td>
+							   						   			
+							   <td>
+									<h:outputLabel value="Qtde entregar" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenQtdeEnt" value="#{vendasMB.qtdeEntrega}" size="5"
+												styleClass="campoInputValor" onkeypress="validateInput('[0-9]*')" />
+							   	</td>
+							   <td>
+									<h:outputLabel value="Data entrega:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+									<p:calendar id="pedVendDtEnt" value="#{vendasMB.dataEntregaParc}"  showButtonPanel="true"
+										style="font-size: 10px;" size="10"
+							   		    pattern="dd/MM/yyyy" />
+							   	</td>
+							   <td>
+									<h:outputLabel value="No parcela:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+									<p:inputText id="pedVenParcEnt" value="#{vendasMB.numeroParcelasEntrega}" size="2"
+													styleClass="campoInputValor" onkeypress="validateInput('[0-9]*')" />
+							   	</td>
+							   <td>
+									<h:outputLabel value="Dias parcela:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+									<p:inputText id="pedVenDiasEnt" value="#{vendasMB.diasEntrega}" size="2"
+												styleClass="campoInputValor" onkeypress="validateInput('[0-9]*')" />
+							   	</td>						   	
+							   
+							</tr> 		
+						</table>
+						<table>
+							<tr>
+								<td width="80px">
+									<h:outputLabel value="Comentário:" style="font-size: 10px"/>
+								</td>
+							   							
+								<td>
+									<p:inputText id="pedVenComcEnt" value="#{vendasMB.descParcelaEntrega}" size="80"
+														styleClass="campoInput" />
+							   	</td>						   	
+							   							   	   	
+							   	<td>
+							   		<p:commandLink  title="Incluir entrega" action="#{vendasMB.addParcEntrega}"
+						        			         styleClass="ui-icon ui-icon-circle-plus" 
+						        			         update="opPedVendProdEntregas">
+						        	</p:commandLink>
+							   	</td>			
+							</tr>
+						</table>						
+					</p:panel>
+	   		
+					<p:dataTable id="dtPedVendProdEntregas" widgetVar="wdPedVendProdEntregas" value="#{vendasMB.listaPedEntregas}"  
+					                 var="item"  rows="10"  paginator="true"  paginatorAlwaysVisible="no" paginatorPosition="bottom" 
+					                 emptyMessage="Sem registro." tableStyle="font-size: 10px; width:600px;" style="font-size: 10px; width:600px;"
+					                 rendered="#{not empty vendasMB.listaPedEntregas}"> 
+					  
+					        <p:column headerText="Data entrega" style="width:20%">  
+					   			<h:outputLabel id="solData" value="#{item.dataParaEntrega}">
+									<f:convertDateTime pattern="dd/MM/yyyy" /> 		             
+						        </h:outputLabel>					            
+					        </p:column>  
+				
+					        <p:column headerText="qtde" style="width:20%">  
+								<h:outputText value="#{item.quantidade}">
+					                  <f:convertNumber locale="pt_BR" minFractionDigits="4"/>
+					            </h:outputText>					            
+					        </p:column>
+					            
+					        <p:column headerText="Qtde Entregue" style="width:10%">  
+					            #{item.qtdeEntregue}
+					        </p:column>
+					        
+					        <p:column headerText="Qtde Saldo" style="width:10%">  
+					            #{item.qtdeSaldo}
+					        </p:column>					        
+					        
+					        <p:column headerText="comentário" style="width:20%">  
+					            #{item.descricao}  
+					        </p:column> 		
+
+					 		<f:facet name="footer">
+			  					<p:commandButton title="Cancelar entregas" action="#{vendasMB.remParcEntrega()}"
+							   			         value="Cancelar entregas" onclick="PF('modalProcessar').show()"
+							   			         update=":conteudoNegocios:fPedVendasExp:tabPedidos:opPedVendProdEntregas"
+							   			         oncomplete="PF('modalProcessar').hide()"
+							   			         rendered="#{vendasMB.pedidos.cancelarSaldo == 0}"/>					 		
+					 		</f:facet>
+					 		
+					  </p:dataTable>
+					  <p:separator/>	
+					  <table>
+							<tr>
+							   	<td>
+				  					<p:commandButton widgetVar="btCancelarSaldo" title="Cancelar saldos pedido" 
+				  									 action="#{vendasMB.cancelarSaldoPed()}"
+								   			         value="Cancelar saldos pedido" onclick="PF('modalProcessar').show()"
+								   			         update=":conteudoNegocios:fPedVendasExp:tabPedidos:opPedVendProdEntregas" 
+								   			         oncomplete="PF('modalProcessar').hide()" 
+								   			         rendered="#{vendasMB.pedidos.cancelarSaldo==0 and vendasMB.pedidos.tipo == 'P'.charAt(0)}">
+								   		<p:confirm header="Confirmation" message="Tem certeza que deseja cancelar os saldos do pedidos?" icon="ui-icon-alert" /> 	         
+								   	</p:commandButton>		         
+							   	</td>
+							</tr>   	
+					  </table>					  							    
+				</p:outputPanel>			          
+	        </p:tab>       
+	        <p:tab title="Itens">   
+	        		<p:outputPanel id="opPedVendProdItens">
+						<table>
+							<tr>
+								<td width="80px">
+									<h:outputLabel value="Produto:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+									<p:autoComplete id="pedVenProduto" minQueryLength="1"  forceSelection="true" 
+				                 				value="#{vendasMB.produtoSelected}" effect="fade"  
+				                 				var="prod" itemLabel="#{prod.descricao}" itemValue="#{prod}" 
+				                 				completeMethod="#{produtosMB.completeProdutos}" converter="prodVendasConverter"
+				                 				styleClass="campoInput" size="50">
+				                 				
+				                 			<p:ajax event="itemSelect" listener="#{vendasMB.setarProduto()}" update="opPedVendProdItens"/>
+				               			<p:column>
+				                 			#{prod.codigo}
+				             			</p:column>
+				               			<p:column>
+				                 			#{prod.descricao}
+				             			</p:column>		
+				            		</p:autoComplete>
+							   	</td>
+								<td>
+									<h:outputLabel value="Est.Fisico:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenEstFisico" value="#{vendasMB.estoqueFisico}" size="8"
+														styleClass="campoInputValor"  readonly="true"/>
+							   	</td>
+							   										<td>
+									<h:outputLabel value="Est.Reserva:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenEsReserva" value="#{vendasMB.estoqueReserva}" size="8"
+														styleClass="campoInputValor"  readonly="true"/>
+							   	</td>
+								<td>
+									<h:outputLabel value="Qtde:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenQtde" value="#{vendasMB.qtdeVendas}" size="8"
+												 styleClass="campoInputValor" onkeypress="validateInput('[0-9]*')" />
+							   	</td>
+							   	<td>
+									<h:outputLabel value="Un.:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+									<p:selectOneMenu id="boxPedVendUniPed" value="#{vendasMB.unidadesProdutoSelected}"
+								                 style="width: 50px" styleClass="selectOneMenu" converter="unidProdSelConverter">
+										<f:selectItems value="#{tabelasComumMB.selectUnidProdutos}" var="unidProd" itemLabel="#{unidProd.codigo}" itemValue="#{unidProd}"/>
+									</p:selectOneMenu>
+							   	</td>							   	
+							</tr> 		
+						</table>	
+						<table>
+							<tr>
+								<td width="80px">
+									<h:outputLabel value="Valor:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenValor" value="#{vendasMB.valorVendas}" size="10"
+												 styleClass="campoInputValor" onkeypress="validateInput('[0-9]*')" />
+							   	</td>
+							   <td>
+									<h:outputLabel value="Desc.Tipo:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+									<p:selectOneMenu id="boxTipoDesc" value="#{vendasMB.tipoDesconto}"	style="width: 100px" styleClass="selectOneMenu">
+										<f:selectItem itemLabel="Valor" itemValue="F" />
+										<f:selectItem itemLabel="Porcentagem" itemValue="P" />
+										<p:ajax  event="change" update="boxTipoDesc"/>
+									</p:selectOneMenu>
+							   	</td>
+							   	<td>
+							 		<p:inputText id="pedVenDescValor" value="#{vendasMB.valorDescItem}" size="8"
+												 styleClass="campoInputValor" onkeypress="validateInput('[0-9]*')"/>													
+							   	</td>							   	
+							   	   	
+							   	<td>
+							   		<p:commandLink  title="Incluir produto" action="#{vendasMB.addPedidosItens}"
+						        			         styleClass="ui-icon ui-icon-circle-plus" 
+						        			         update=":conteudoNegocios:fPedVendasExp:tabPedidos" oncomplete="js_SET_FINANCEIRO()">  
+					                	<f:setPropertyActionListener value="REM_PARC" target="#{financeiroMB.comando}"/>	   	               
+						        	</p:commandLink>		         
+             				   	</td>				
+							</tr> 		
+						</table>							
+					    <p:dataTable id="dtPedVendProd" var="item" value="#{vendasMB.listaPedItens}"  rows="10"  
+					                 paginator="true"  paginatorAlwaysVisible="no" paginatorPosition="bottom" rowIndexVar="linha"
+					                 emptyMessage="Sem registro." tableStyle="font-size: 10px; width:1000px;" style="width:1000px;">
+				
+				
+					        <p:column headerText="Qtde" style="width:10%">  
+					            #{item.quantidade}
+					        </p:column>  
+				
+					        <p:column headerText="Descrição" style="width:50%">  
+					            #{item.descricaoProduto}  
+					        </p:column>
+					        
+					        <p:column headerText="Valor unitário" style="width:10%; text-align:right">  
+					            <h:outputText value="#{item.valorUnitario}">
+					                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+					            </h:outputText>		        
+					            
+					        </p:column>  	
+				
+					        <p:column headerText="Valor total" style="width:10%; text-align:right">  
+					            <h:outputText value="#{item.valorTotal}" >
+					                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+					            </h:outputText>		        
+					             
+					        </p:column>  	        
+	
+					        <p:column headerText="Desconto item" style="width:10%; text-align:right">  
+					            <h:outputText value="#{item.valorDesconto}">
+					                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+					            </h:outputText>		
+					            <p:spacer width="5px"/> 
+					            <h:outputText value="(#{item.percDesconto})" >
+					                  <f:convertNumber locale="pt_BR" minFractionDigits="2" />
+					            </h:outputText>
+					            <h:outputText value="%"/>
+					        </p:column> 
+					        
+					        <p:column headerText="Desc.Ped.Total" style="width:10%; text-align:right">  
+					            <h:outputText value="#{item.valorDescontoPedido}">
+					                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+					            </h:outputText>		
+					            <p:spacer width="5px"/> 
+					            <h:outputText value="(#{item.percDescontoPedido})" >
+					                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+					            </h:outputText>
+					            <h:outputText value="%"/>
+					        </p:column> 					        
+					        
+					        <p:column headerText="Valor c/desconto" style="width:20%. text-align:right">  
+					            <h:outputText value="#{item.valorComDesconto}" >
+					                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+					            </h:outputText>		        
+					             
+					        </p:column>  					        
+					        
+					
+					        <p:column headerText="Ação" style="width:10%">  
+					           <p:commandButton action="#{vendasMB.remPedidosItens()}" icon="ui-icon-closethick"
+					                            update=":conteudoNegocios:fPedVendasExp:tabPedidos:opPedVendProdItens,
+					                                    :conteudoNegocios:fPedVendasExp:tabPedidos:opPedVendProdEntregas,
+					                                    :conteudoNegocios:fPedVendasExp:tabPedidos:opPedVendProdFinan"
+					                            oncomplete="js_SET_FINANCEIRO()">  
+					                <f:setPropertyActionListener value="#{item}" target="#{vendasMB.pedidosItemSelected}"/>   
+					                <f:setPropertyActionListener value="REM_PARC" target="#{financeiroMB.comando}"/>   
+					           </p:commandButton>				        
+					        </p:column>    	  
+					 
+					    </p:dataTable>			
+						<p:separator />
+						<table style="width: 450px">
+							<tr>
+								<td width="150px">
+									<h:outputLabel value="Valor comissão representante: " style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenVComRep" value="#{vendasMB.vComiRepres}" size="8"
+														styleClass="campoInputValor"  readonly="true">
+										<f:convertNumber locale="pt_BR" minFractionDigits="2"/>														
+									</p:inputText>					
+							   	</td>
+							   	<td>
+							   		<p:commandButton update=":fTipoDespView:opTipoDespView" value="Detalhe"
+						                             oncomplete="PF('wdTipoDespView').show()" rendered="#{vendasMB.tpDespComiRep != null}">  
+						                <f:setPropertyActionListener value="#{vendasMB.tpDespComiRep}" target="#{cadastroDespesasMB.tipoDespesa}"/>
+						           </p:commandButton>
+						        </td>   
+							</tr>
+						</table>	
+						<table style="width: 450px">
+							<tr>
+								<td width="150px">
+									<h:outputLabel value="Valor comissão Indicador: " style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenVComInd" value="#{vendasMB.vComiIndicador}" size="8"
+														styleClass="campoInputValor"  readonly="true">
+										<f:convertNumber locale="pt_BR" minFractionDigits="2"/>														
+									</p:inputText>					
+							   	</td>
+							   	<td>
+							   		<p:commandButton update=":fTipoDespView:opTipoDespView" value="Detalhe" 
+						                             oncomplete="PF('wdTipoDespView').show()" rendered="#{vendasMB.tpDespComiInd != null}">  
+						                <f:setPropertyActionListener value="#{vendasMB.tpDespComiInd}" target="#{cadastroDespesasMB.tipoDespesa}"/>
+						           </p:commandButton>
+						        </td>  						   	
+							</tr>
+						</table>
+						<table style="width: 450px">
+								<tr>
+									<td width="150px">
+										<h:outputLabel value="Valor desconto total:" style="font-size: 10px"/>
+									</td>
+								   	<td>
+								 		<p:inputText id="pedVenVDesconto" value="#{vendasMB.valorDesconto}" size="10"
+													 styleClass="campoInputValor" onkeypress="validateInput('[0-9]*')">
+											<p:ajax event="change" listener="#{vendasMB.setarCalculoDescontoPedido()}" update="opPedVendProdItens"/>
+										</p:inputText>					
+								   	</td>						  	
+					  			</tr>	
+							</table>
+								</p:outputPanel>				   						
+				        </p:tab>      
+	           
+	         <p:tab title="Dados"> 
+					<p:outputPanel id="opContatos">	         
+						<table style="width: 850px">
+							<tr>
+						  		<td  width="80px">
+						  			<h:outputLabel value="Cliente:" style="font-size: 10px"/>
+						  		</td>
+						  		<td>
+						 
+									<p:autoComplete id="pessoaCliente" minQueryLength="1"   forceSelection="true" 
+						                 				value="#{vendasMB.clienteSelected}" effect="fade"  
+						                 				var="cli" itemLabel="#{cli.pessoas.nome}" itemValue="#{cli}" 
+						                 				completeMethod="#{pessoasCadastroMB.completePessoasClienteInternacional}" converter="pessoaTipoClienteConverter"
+						                 				styleClass="campoInput" size="50" >
+						                 		
+						                 	<p:ajax event="itemSelect" listener="#{vendasMB.setarCliente()}" update=":conteudoNegocios:fPedVendasExp:tabPedidos" />
+						               		<p:column>
+						                 			#{cli.pessoas.nome}
+						             		</p:column>		
+						             		 
+						            </p:autoComplete>
+						            <p:commandButton update=":fPessoaDetail:opPessoaDetail" oncomplete="PF('wdPessoaDetail').show()"
+						                            value="Detalhe" rendered="#{vendasMB.pedidos.pessoa != null}">  
+						                <f:setPropertyActionListener value="#{vendasMB.pedidos.pessoa}" target="#{pessoasCadastroMB.pessoas}"/>
+						           </p:commandButton>
+						  		</td>
+							 	<td>
+							 		<h:outputLabel value="UF.: " styleClass="campoLabel" style="font-size: 10px"/>
+							 	</td>
+							 	<td>
+									<p:inputText id="pedVenCliUf" value="#{vendasMB.ufPessoa}" size="5"
+															styleClass="campoInput" readonly="true"/>	        	                    				     	
+							 	</td>				
+							 	<td>
+							 		<h:outputLabel value="Vendedor: " styleClass="campoObrigatorio" style="font-size: 10px"/>
+							 	</td>
+							 	<td>
+									<p:autoComplete id="pedVenVendedor" minQueryLength="1"   
+						                 				value="#{vendasMB.vendedorSelected}" effect="fade"  
+						                 				var="pe" itemLabel="#{pe.pessoas.nome}" itemValue="#{pe}" 
+						                 				completeMethod="#{pessoasCadastroMB.completePessoasVendedor}" converter="pessoaTipoVendedorConverter"
+						                 				styleClass="campoInput" size="40" >
+						                 		
+						                 	<p:ajax event="itemSelect"  update="pedVenVendedor"/>			
+						               		<p:column>
+						                 			#{pe.pessoas.nome}
+						             		</p:column>		
+						            </p:autoComplete>		        	                    				     	
+							 	</td>	
+	
+				  			</tr>	
+						</table>
+	
+						<table style="width: 850px">
+							<tr>
+						  		<td  width="80px">
+						  			<h:outputLabel value="Contatos:" style="font-size: 10px"/>
+						  		</td>
+						  		<td>
+								    <p:dataTable id="dtPedVendCont" var="item" value="#{vendasMB.listaContatos}"  rows="10" 
+								                 paginator="true"  paginatorAlwaysVisible="no" paginatorPosition="bottom" rowIndexVar="linha"
+								                 emptyMessage="Sem registro." tableStyle="font-size: 10px; width:700px;" style="width:700px;">
+							
+							
+								        <p:column headerText="Contato" style="width:20%">  
+								            #{item.nome}
+								        </p:column>  
+							
+								        <p:column headerText="Telefones:" style="width:40%">  
+								            #{item.tel1DDI} - (#{item.tel1DDD}) - #{item.tel1Numero} / #{item.tel2DDI} - (#{item.tel2DDD}) - #{item.tel2Numero} 
+								          / #{item.tel2DDI} - (#{item.tel2DDD}) - #{item.tel2Numero} 
+								        </p:column>
+								        
+								        <p:column headerText="Emails" style="width:40%">  
+								            #{item.emailPrincipal} / #{item.emailSecundario} 
+								        </p:column>  	        
+								    	  
+								        <p:column headerText="Ação" style="width:10%">  
+								           <p:commandButton action="#{vendasMB.removerContato()}" icon="ui-icon-closethick"
+								                            update="dtPedVendCont" rendered="#{item.IDPessoaContato == null}">  
+								                <f:setPropertyActionListener value="#{item}" target="#{vendasMB.pContatoSelected}"/>   
+								           </p:commandButton>				        
+								        </p:column>  								    	  
+								 
+								    </p:dataTable>
+						            <p:commandButton 
+						            				 update="opContatos" 
+						            				  value="Novo contato" rendered="#{vendasMB.showAddContato and !vendasMB.addContato}">  
+						                <f:setPropertyActionListener value="#{true}" target="#{vendasMB.addContato}"/>  
+						           </p:commandButton>
+						  		</td>
+								           		  			
+				  			</tr>	
+				 
+						</table>
+						<p:panel id="pCadPesCont" style="width:100%" rendered="#{vendasMB.addContato}">
+								<table>
+									<tr>
+										<td style="width: 80px"><h:outputLabel value="Contato:" styleClass="campoLabelBold" /></td>
+										<td><p:inputText value="#{vendasMB.pessoasContato.nome }" styleClass="campoInput" size="50" /></td>
+										<td><h:outputLabel value="Cargo:" styleClass="campoLabelBold" /></td>
+										<td><p:inputText value="#{vendasMB.pessoasContato.descricaoCargo}" styleClass="campoInput" size="30" /></td>
+									</tr>
+								</table>
+					
+								<table>
+									<tr>
+										<td style="width: 80px"><h:outputLabel value="Emails" styleClass="campoLabelBold" /></td>
+										<td><p:inputText value="#{vendasMB.pessoasContato.emailPrincipal}" styleClass="campoInput" size="50" /></td>
+										<td><p:inputText value="#{vendasMB.pessoasContato.emailSecundario}" styleClass="campoInput" size="50" /></td>
+									</tr>
+								</table>
+					
+								<table>
+									<tr>
+										<td style="width: 80px"><h:outputLabel value="Telefones:" styleClass="campoLabelBold" /></td>
+										<td><p:selectOneMenu id="boxTpTelefone1" value="#{pessoasCadastroMB.pessoasContato.tel1Tipo}" 
+											style="width: 50px" styleClass="selectOneMenu">
+												<f:selectItem itemLabel="-SEL-" itemValue="0" />
+												<f:selectItem itemLabel="COM." itemValue="T" />
+												<f:selectItem itemLabel="CEL." itemValue="C" />
+												<f:selectItem itemLabel="RES." itemValue="B" />
+											</p:selectOneMenu></td>
+										<td><p:inputText value="#{vendasMB.pessoasContato.tel1DDI}" styleClass="campoInput" size="3" /></td>
+										<td><p:inputText value="#{vendasMB.pessoasContato.tel1DDD}" styleClass="campoInput" size="3" /></td>
+										<td><p:inputText value="#{vendasMB.pessoasContato.tel1Numero}" styleClass="campoInput" size="10" /></td>
+					
+										<td><p:selectOneMenu id="boxTpTelefone2" value="#{pessoasCadastroMB.pessoasContato.tel2Tipo}" 
+											style="width: 50px" styleClass="selectOneMenu">
+												<f:selectItem itemLabel="-SEL-" itemValue="0" />
+												<f:selectItem itemLabel="COM." itemValue="T" />
+												<f:selectItem itemLabel="CEL." itemValue="C" />
+												<f:selectItem itemLabel="RES." itemValue="B" />
+											</p:selectOneMenu></td>
+										<td><p:inputText value="#{vendasMB.pessoasContato.tel2DDI}" styleClass="campoInput" size="3" /></td>
+										<td><p:inputText value="#{vendasMB.pessoasContato.tel2DDD}" styleClass="campoInput" size="3" /></td>
+										<td><p:inputText value="#{vendasMB.pessoasContato.tel2Numero}" styleClass="campoInput" size="10" /></td>
+						
+										<td><p:selectOneMenu id="boxTpTelefone3" value="#{pessoasCadastroMB.pessoasContato.tel3Tipo}" 
+											style="width: 50px" styleClass="selectOneMenu">
+												<f:selectItem itemLabel="-SEL-" itemValue="0" />
+												<f:selectItem itemLabel="COM." itemValue="T" />
+												<f:selectItem itemLabel="CEL." itemValue="C" />
+												<f:selectItem itemLabel="RES." itemValue="B" />
+											</p:selectOneMenu></td>
+										<td><p:inputText value="#{vendasMB.pessoasContato.tel3DDI}" styleClass="campoInput" size="3" /></td>
+										<td><p:inputText value="#{vendasMB.pessoasContato.tel3DDD}" styleClass="campoInput" size="3" /></td>
+										<td><p:inputText value="#{vendasMB.pessoasContato.tel3Numero}" styleClass="campoInput" size="10" /></td>					
+										
+									</tr>
+								</table>
+					
+								<table>
+									<tr>
+										<td style="width: 80px"><h:outputLabel value="" styleClass="campoLabel" /></td>
+					
+										<td>
+											<p:commandButton action="#{vendasMB.adicionarContato()}" 
+											                 value="Salvar" styleClass="botaoPadrao" 
+											                 update="opContatos">
+							                	 <f:setPropertyActionListener value="#{false}" target="#{vendasMB.addContato}"/>                
+							                </p:commandButton>	
+										</td>
+									</tr>
+								</table>
+					
+							</p:panel>
+					</p:outputPanel>			
+					<p:separator />
+					<table style="width: 550px">
+						<tr>
+					  		<td  width="80px">
+					  			<h:outputLabel value="Representante:" style="font-size: 10px"/>
+					  		</td>
+					  		<td>
+					 
+								<p:autoComplete id="pedVenRepr" minQueryLength="1"  forceSelection="true" 
+					                 				value="#{vendasMB.repreSelected}" effect="fade"  
+					                 				var="pe" itemLabel="#{pe.pessoas.nome}" itemValue="#{pe}" 
+					                 				completeMethod="#{pessoasCadastroMB.completePessoasRepresentante}" converter="pessoaTipoRepresentanteConverter"
+					                 				styleClass="campoInput" size="50" >
+					                 		
+					                 	<p:ajax event="itemSelect" listener="#{vendasMB.setarRepresentante()}" update=":conteudoNegocios:fPedVendasExp:tabPedidos"/>
+					               		<p:column>
+					                 			#{pe.pessoas.nome}
+					             		</p:column>		
+					             		 
+					            </p:autoComplete>
+								
+					  		</td>
+						   <td>
+								<h:outputLabel value="Comissão padrão:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+						 		<p:inputText id="pedVenComRepres" value="#{vendasMB.tpDespComiRep.valor}" size="5"
+													styleClass="campoInputValor"  readonly="true"/>
+						   	</td>			
+							<td>
+						
+							</td>
+			  			</tr>	
+					</table>			
+					<table style="width: 550px">
+						<tr>
+					  		<td  width="80px">
+						 		<h:outputLabel value="Indicador: "  style="font-size: 10px"/>
+						 	</td>
+						 	<td>
+								<p:autoComplete id="pedVenIndicador" minQueryLength="1"  forceSelection="true"  
+					                 				value="#{vendasMB.indiSelected}" effect="fade"  
+					                 				var="pe" itemLabel="#{pe.pessoas.nome}" itemValue="#{pe}" 
+					                 				completeMethod="#{pessoasCadastroMB.completePessoasIndicador}" converter="pessoaTipoIndicadorConverter"
+					                 				styleClass="campoInput" size="50" >
+					                 		
+					                 	<p:ajax event="itemSelect" listener="#{vendasMB.setarIndicador()}" update=":conteudoNegocios:fPedVendasExp:tabPedidos"/>			
+					               		<p:column>
+					                 			#{pe.pessoas.nome}
+					             		</p:column>		
+					            </p:autoComplete>		        	                    				     	
+						 	</td>
+						 	<td>
+								<h:outputLabel value="Comissão padrão:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+						 		<p:inputText id="pedVenComIndic" value="#{vendasMB.tpDespComiInd.valor}" size="5"
+													styleClass="campoInputValor" readonly="true"/>
+						   	</td>			
+			  			</tr>	
+					</table>
+					<p:separator />	
+					<table style="width: 550px">
+						<tr>
+					  		<td  width="80px">
+					  			<h:outputLabel value="Proforma cliente:" style="font-size: 10px"/>
+					  		</td>
+					  		<td  width="80px">
+								<p:inputText id="pedCliNumPed" value="#{vendasMB.pedidos.clienteNumeroPedido}" size="20"
+													styleClass="campoInput"/>			            
+					  		</td>
+					  		<td>
+					  			<h:outputLabel value="Dt. Proforma cliente:" style="font-size: 10px"/>
+					  		</td>
+					  		<td>
+						 		<p:calendar id="pedDtPedCli" value="#{vendasMB.pedidos.clienteDataPedido}"  
+											style="font-size: 10px;" size="10" showOn="button" pattern="dd/MM/yyyy" />					  		
+					  		</td>					  		
+			  			</tr>	
+					</table>
+					<table style="width: 700px">
+						<tr>
+					  		<td  width="80px">
+					  			<h:outputLabel value="Origem:" style="font-size: 10px"/>
+					  		</td>
+					  		<td   width="100px">
+								<p:selectOneMenu id="boxPedOrigem" value="#{vendasMB.pedidos.origemPedido}" style="width: 200px" styleClass="selectOneMenu">
+									<f:selectItem itemLabel="Presencial" itemValue="Presencial"/>
+									<f:selectItem itemLabel="Internet" itemValue="Internet"/>
+									<f:selectItem itemLabel="Teleantendimento" itemValue="Teleantendimento"/>
+								</p:selectOneMenu>				            
+	
+					  		</td>						
+					  		<td>
+					  			<h:outputLabel value="Tipo de Consumo:" style="font-size: 10px"/>
+					  		</td>
+					  		<td>
+								<p:selectOneMenu id="boxPedTpConsumo" value="#{vendasMB.pedidos.tipoConsumoProduto}"
+									                 style="width: 200px" styleClass="selectOneMenu" converter="tipoConsumoConverter">
+											<f:selectItems value="#{tabelasComumMB.selectTipoConsumo}" var="tpCons" itemLabel="#{tpCons.descricao}" itemValue="#{tpCons}"/>
+								</p:selectOneMenu>				            
+	
+					  		</td>
+			  			</tr>	
+					</table>
+					<p:separator />		
+					<table style="width: 550px">
+						<tr>
+					  		<td width="80px">
+					  			<h:outputLabel value="Bandeira posto:" style="font-size: 10px"/>
+					  		</td>
+					  		<td>
+								<p:selectOneMenu id="boxPedPosto" value="#{vendasMB.pedidos.tipoPosto}"
+									                 style="width: 200px" styleClass="selectOneMenu" converter="tabelaPostoConverter">
+											<f:selectItems value="#{tabelasComumMB.selectPosto}" var="posto" itemLabel="#{posto.descricao}" itemValue="#{posto}"/>
+								</p:selectOneMenu>			            
+					  		</td>
+			  			</tr>	
+					</table>
+					<table style="width: 650px">
+						<tr>
+					  		<td width="80px">
+					  			<h:outputLabel value="Obra:" style="font-size: 10px"/>
+					  		</td>
+					  		<td>
+								<p:inputText id="pedDtPedObra" value="#{vendasMB.pedidos.obra}" size="90"
+													styleClass="campoInput"/>															  		
+					  		</td>					  		
+			  			</tr>	
+					</table>	
+					<table>
+						<tr>
+							<td width="80px">
+								<h:outputLabel value="Observação:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+								<h:inputTextarea id="pedVenObs" value="#{vendasMB.pedidos.obs}" 
+			 									 cols="1" rows="2" style="width: 800px"	/>					
+						   	</td>
+						</tr>   	
+					</table>	
+					<p:separator/>
+					<table>
+						<tr>
+							<td width="80px">
+								<h:outputLabel value="Cancelar:" style="font-size: 10px"  rendered="#{vendasMB.pedidos.IDPedido != null}"/>
+							</td>
+						   	<td>
+								<p:selectOneMenu id="boxPedTpCancelar" value="#{vendasMB.pedidos.motivoCancelamento}"
+									                 style="width: 200px" styleClass="selectOneMenu" converter="tipoCancPedidoConverter"
+									                 rendered="#{vendasMB.pedidos.IDPedido != null}">
+											<f:selectItems value="#{tabelasComumMB.selectCancPedVendas}" var="tpCons" itemLabel="#{tpCons.descricao}" itemValue="#{tpCons}"/>
+								</p:selectOneMenu>					
+						   	</td>
+						   	<td>
+						   		<p:commandLink  title="Cancelar" action="#{vendasMB.cancelarPedido}"
+					        			         styleClass="ui-icon ui-icon-check" 
+					        			         update=":conteudoNegocios:fPedVendasExp:tabPedidos,:conteudoNegocios:fPedVendasExp:opbtPedVEndas"
+					        			         rendered="#{vendasMB.pedidos.IDPedido != null}">  
+				                	<p:confirm header="Confirmation" message="Tem certeza que deseja cancelar?" icon="ui-icon-alert" />  	               
+					        	</p:commandLink>						   	
+						   	</td>
+						</tr>   	
+					</table>					
+													
+	        </p:tab> 
+	        
+	            
+	    </p:tabView>     
+
+			
+  		<p:toolbar>
+			<p:toolbarGroup>
+			<p:outputPanel id="opbtPedVEndas">
+			    <p:commandButton id="bPedVenNovo" action="#{vendasMB.setOpcao()}"
+			      		       icon="ui-icon-arrowthickstop-1-w" title="Novo"  
+			      		       update=":conteudoNegocios:fPedVendasExp:tabPedidos,:conteudoNegocios:fPedVendasExp:pedVenNumPedido,
+				   			          :conteudoNegocios:fPedVendasExp:pedVendDtEmi,
+				   			          :conteudoNegocios:fPedVendasExp:opProcuraVendas,mensaTela"
+			      		       oncomplete="js_SET_FINANCEIRO(),PF('modalProcessar').hide()">   
+					<f:setPropertyActionListener value="SET_PARC" target="#{financeiroMB.comando}"/>
+					
+				</p:commandButton>	    
+				<span class="ui-separator">
+                	<span class="ui-icon ui-icon-grip-dotted-vertical" />
+            	</span>			      		       
+				<p:commandButton id="bPedVenSalvar" action="#{vendasMB.save()}"
+			      		       icon="ui-icon-disk" title="Salvar pedido" 
+			      		       onclick="PF('modalProcessar').show()"
+			      		       update=":conteudoNegocios:fPedVendasExp:tabPedidos,:conteudoNegocios:fPedVendasExp:pedVenNumPedido,mensaTela" 
+			      		       oncomplete="js_SET_FINANCEIRO(),PF('modalProcessar').hide()"
+			      		       rendered="#{vendasMB.pedidos.motivoCancelamento == null}"> 
+			      	<f:setPropertyActionListener value="1" target="#{vendasMB.pedidos.tipoNacExp}"/>	         
+					<f:setPropertyActionListener value="SAVE_PARC" target="#{financeiroMB.comando}"/>
+				</p:commandButton>	    
+				<span class="ui-separator">
+                	<span class="ui-icon ui-icon-grip-dotted-vertical" />
+            	</span>		
+            	<h:outputLabel id="mensaTela" value="#{vendasMB.mensaTela}" style="font-size: 10px" styleClass="campoObrigatorio"/>
+            </p:outputPanel>		
+			</p:toolbarGroup>
+ 		</p:toolbar>
+    </h:form>
+	<p:remoteCommand name="js_SET_FINANCEIRO" action="#{financeiroMB.execFinanceiro()}" 
+	                 update=":conteudoNegocios:fPedVendasExp:tabPedidos:dtPedVendParc,:conteudoNegocios:fPedVendasExp:tabPedidos:opPedVendProdFinan,
+	                         :conteudoNegocios:fPedVendasExp:opProcuraVendas">
+		<f:setPropertyActionListener value="#{vendasMB.valorTotal}" target="#{financeiroMB.valorSaldoParcelas}"/>
+		<f:setPropertyActionListener value="#{vendasMB.pedidos}" target="#{financeiroMB.pedidoVendas}"/>
+	</p:remoteCommand>
+	<p:remoteCommand name="js_ATUALIZAR_PARCPAGTO" action="#{financeiroMB.atualizarParcelasPagto()}" 
+	                     update=":conteudoNegocios:fPedVendasExp:tabPedidos">
+		<f:setPropertyActionListener value="#{vendasMB.valorTotal}" target="#{financeiroMB.valorSaldoParcelas}"/>
+		<f:setPropertyActionListener value="#{vendasMB.pedidos}" target="#{financeiroMB.pedidoVendas}"/>
+		<f:setPropertyActionListener value="#{vendasMB.listaPedItensEnt}" target="#{financeiroMB.listaPedItensEnt}"/>
+	</p:remoteCommand>
+	
+											
+    </h:body>
+  	     
+	<p:dialog id="dPedVenAddCont" header="Adicionando contato" widgetVar="wPedVenAddCont" modal="true" height="200" width="800"
+	      position="top"> 
+		<h:form id="fPedVenAddCont">
+	   		<ui:include src="/admCadastros/cadPessoaContatos.xhtml" />
+	 	</h:form>
+	</p:dialog>	
+</ui:composition>
+

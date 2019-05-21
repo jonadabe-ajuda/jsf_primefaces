@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h="http://java.sun.com/jsf/html"
+	 xmlns:f="http://java.sun.com/jsf/core"
+           xmlns:p="http://primefaces.org/ui">
+      
+
+<h:form id="form">  
+    
+    <p:growl id="growl" showDetail="true" />  
+  
+    <!-- p:dashboard id="dashBoardOrcaCusto" model="#{orcaCustoDashBoard.modelAlertaOrcaCusto}" >  
+        <p:ajax event="reorder" update="growl" /-->  
+  
+        <p:panel id="pDashBoardOrca" style="border: 0px solid black; height: 300px; width: 1000px"
+                 header="Resultado orçamentos (Orçado X Real)">  
+            <h:graphicImage url="../imagens/exemplos/graficos.png"/>  
+        </p:panel>  
+
+ 
+        <p:spacer height="5"/>
+        <p:panelGrid columns="2"  styleClass="panelGrid">
+	        <p:panel id="pDashBoardCusto" style="border: 1px solid black; height: 150px; width: 450px"
+	                 header="Mensagens">  
+	            <h:outputText value="Sem mensagem" />  
+	 
+	        </p:panel>  
+	        <p:panel id="pDashBoardPedido" style="border: 1px solid black; height: 150px; width: 450px"
+	                 header="Cadastro Produtos">  
+	            <h:outputText value="Sem produtos para cadastrar" />  
+	 
+	        </p:panel> 	        
+        </p:panelGrid>
+ 
+    <!-- /p:dashboard-->  
+
+</h:form>  
+   
+      
+</html>      

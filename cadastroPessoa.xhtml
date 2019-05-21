@@ -1,0 +1,672 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:head>
+		<h:outputStylesheet library="css" name="commom.css" />
+		<h:outputScript  library="js" name="funcoes.js"/>
+	</h:head>
+
+<h:body>
+	<h:form id="formCadPessoas">
+		<p:outputPanel id="opCadPesBusca">
+		<p:panel id="pCadPesBusca" header="Busca no cadastro de pessoas." style="width:100%" rendered="#{pessoasCadastroMB.tipoOperacao == 0}">
+			<table style="width: 900px">
+				<tr>
+
+				    <td style="width:80px">
+				    	<h:outputLabel value="Filtros:" styleClass="campoObrigatorio" />
+				    </td>
+					<td>
+						<p:selectOneMenu id="boxFiltroPessoa" value="#{pessoasCadastroMB.systemSearchSelected}" style="width: 100px" 
+						                 styleClass="selectOneMenu" converter="tipoSystemSearchConverter">
+							 <f:selectItems value="#{systemSearchMB.selecSystemSearchs}" var="sySearch" itemLabel="#{sySearch.descricao}" itemValue="#{sySearch}"/>
+							 <p:ajax event="change" update="boxFiltroPessoa"/>
+						</p:selectOneMenu>				
+					</td>				
+					
+					<td>
+						<p:inputText value="#{pessoasCadastroMB.systemSearchConteudo}" styleClass="campoInput" size="80" />
+					</td>
+						
+					<td>
+			  			<p:commandButton title="Listar resultado" value="Buscar"
+			  			                 action="#{pessoasCadastroMB.getListaPessoasBusca}"
+			   			         icon="ui-icon ui-icon-circle-zoomin" onclick="PF('modalProcessar').show()"
+			   			         update="dtPessoaBusca" oncomplete="PF('modalProcessar').hide()"/>					
+					</td>
+					<td>
+						<p:commandButton value="Novo" 
+						                 styleClass="botaoPadrao"  immediate="true"
+						                 update=":conteudoCadastros:formCadPessoas:opCadPes,:conteudoCadastros:formCadPessoas:opCadPesBusca" 
+						                 onclick="PF('modalProcessar').show()"
+						                 oncomplete="PF('modalProcessar').hide()">
+						    <f:setPropertyActionListener value="1" target="#{pessoasCadastroMB.tipoOperacao}"/>      
+						</p:commandButton>					
+					</td>
+				</tr>	
+			</table>	   
+			
+		    <p:dataTable id="dtPessoaBusca" widgetVar="wdPessoaBusca" value="#{pessoasCadastroMB.dataModelPessoasTipo}"
+		                 filteredValue="#{pessoasCadastroMB.filterPessoasTipoBusca}"  var="item"  emptyMessage="Sem registro." selectionMode="single"
+		                 scrollable="true" scrollHeight="370" scrollRows="10" 
+		                 selection="#{pessoasCadastroMB.pPessoaTipoSelected}" rowKey="#{item}"
+		                 tableStyle="font-size: 10px;" style="width:900px;">  
+		
+		        <p:ajax event="rowSelect" listener="#{pessoasCadastroMB.getPessoaSelected}"
+		                update=":conteudoCadastros:formCadPessoas:opCadPes,:conteudoCadastros:formCadPessoas:opCadPesBusca" />  
+		                        
+			    <p:column headerText="Data cadastro" style="width:10%" >  
+		   			<h:outputLabel value="#{item.pessoas.dataInclusao}">
+						<f:convertDateTime pattern="dd/MM/yyyy"/> 		             
+			        </h:outputLabel>	
+		        </p:column>      
+		
+		        <p:column headerText="Matricula" style="width:10%" rendered="#{dadosSistemaMB.qualSistemaERPA == 3 and dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo == 2}">  
+		            <h:outputLabel value="#{item.pessoas.registro}"/>
+		        </p:column>		
+		
+		        <p:column headerText="Nome" style="width:60%"   filterBy="#{item.pessoas.nome}" filterMatchMode="contains" sortBy="#{item.pessoas.nome}">  
+		            <h:outputLabel value="#{item.pessoas.nome}"/>
+		        </p:column>  
+		       
+		        <p:column headerText="Insc. Federal" style="width:10%" >  
+		            <p:outputLabel value="#{item.pessoas.inscFederal}"/>
+		        </p:column>		        
+		        
+		        <p:column headerText="Insc. Estadual" style="width:10%" >  
+		            <h:outputLabel value="#{item.pessoas.inscEstadual}"/>
+		        </p:column>		        		    
+	                      		        
+		    </p:dataTable>			
+		</p:panel>
+		</p:outputPanel>
+		<p:outputPanel id="opCadPes">
+		<p:panel id="pCadPes" header="Cadastro de pessoas:" style="width:100%" rendered="#{pessoasCadastroMB.tipoOperacao != 0}">
+
+			<p:tabView id="tCadPes" effect="fade" effectDuration="normal" style="width:100%;" >
+
+				<p:ajax event="tabChange" listener="#{pessoasCadastroMB.onTabChange}" update="tCadPes"/>
+				
+				<p:tab id="dadosBasicosEscola" title="Dados Básicos" rendered="#{pessoasCadastroMB.seColaborador != 1 and menuPrincipal.qualSistemaERPA == 3}">
+					<ui:insert name="cadPessoaEscolasDados">
+						<ui:include src="cadPessoaEscolasDados.xhtml" />
+					</ui:insert>
+				</p:tab>
+				
+				<p:tab id="dadosBasicos" title="Dados Básicos" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo != 5 and menuPrincipal.qualSistemaERPA != 3}">
+					<ui:insert name="cadPessoaDados">
+						<ui:include src="cadPessoaDados.xhtml" />
+					</ui:insert>
+				</p:tab>				
+				
+	
+				<p:tab id="contatosEscola" title="Contatos" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo != 5 and menuPrincipal.qualSistemaERPA == 3}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaEscolasContatos.xhtml" />
+					</ui:insert>
+				</p:tab>
+				
+				<p:tab id="contatos" title="Contatos" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo != 5 and menuPrincipal.qualSistemaERPA != 3}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaContatos.xhtml" />
+					</ui:insert>
+				</p:tab>				
+
+				<p:tab id="enderecosEscola" title="Endereços" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo != 5 and menuPrincipal.qualSistemaERPA == 3}">
+					<ui:insert name="cadPessoaEndereco">
+						<ui:include src="cadPessoaEscolasEnderecos.xhtml" />
+					</ui:insert>
+				</p:tab>
+				
+				<p:tab id="enderecos" title="Endereços" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo != 5 and menuPrincipal.qualSistemaERPA != 3}">
+					<ui:insert name="cadPessoaEndereco">
+						<ui:include src="cadPessoaEnderecos.xhtml" />
+					</ui:insert>
+				</p:tab>				
+				 
+				<p:tab id="fiscal" title="Fiscal" 
+				       rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo != 5 and menuPrincipal.qualSistemaERPA != 3 and pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaFiscal.xhtml" />
+					</ui:insert>
+				</p:tab>	
+				
+				<p:tab id="financeiro" title="Financeiro" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo != 5  and menuPrincipal.qualSistemaERPA != 3}" 
+				       disabled="#{pessoasCadastroMB.pessoas.IDPessoa == null}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaFinanceiro.xhtml" />
+					</ui:insert>
+				</p:tab>				
+				
+				<p:tab id="documentos" title="Documentos" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo != 5 and menuPrincipal.qualSistemaERPA != 3}"
+				       disabled="#{pessoasCadastroMB.pessoas.IDPessoa == null}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaDocumentosAnexos.xhtml" />
+					</ui:insert>
+				</p:tab>
+				
+				<p:tab id="historico" title="Histórico" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo != 5}" disabled="#{pessoasCadastroMB.pessoas.IDPessoa == null}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaHistorico.xhtml" />
+					</ui:insert>
+				</p:tab>
+				
+				<p:tab id="dadosPessoais" title="Dados Pessoais" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo == 5}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaDadosPessoais.xhtml" />
+					</ui:insert>
+				</p:tab>
+				
+				<p:tab id="dadosPessoaisCont" title="Dados Pessoais Cont." rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo == 5}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaDadosPessoaisCont.xhtml" />
+					</ui:insert>
+				</p:tab>
+
+				<p:tab id="documentosColaborador" title="Documentos" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo == 5}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaDocumentos.xhtml"/>
+					</ui:insert>
+				</p:tab>
+				<p:tab id="dependentes" title="Dependentes" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo == 5}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaDependentes.xhtml" />
+					</ui:insert>
+				</p:tab>
+				<p:tab id="dadosOficiais" title="Dados Oficiais" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo == 5}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaDadosOficiais.xhtml" />
+					</ui:insert>
+				</p:tab>
+
+				<p:tab id="folha" title="Folha" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo == 5}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaFolha.xhtml" />
+					</ui:insert>
+				</p:tab>
+
+				<p:tab id="salarios" title="Salários / Afastamentos" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo == 5}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaSalariosAfast.xhtml" />
+					</ui:insert>
+				</p:tab>
+
+				<p:tab id="treinamentos" title="Treinamentos" rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo == 5}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaTreinamentos.xhtml" />
+					</ui:insert>
+				</p:tab>
+				
+				<p:tab id="cursos" title="Cursos" 
+				        disabled="#{pessoasCadastroMB.pessoas.IDPessoa == null}"
+				        rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo == 2 and menuPrincipal.qualSistemaERPA == 3}">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaCursos.xhtml" />
+					</ui:insert>
+				</p:tab>
+				
+				<p:tab id="dadosUsuarios" title="Dados login"
+				       rendered="#{dadosSistemaMB.systemMenuRotina.pessoasTipo.IDPessoasTipo == 8 and menuPrincipal.qualSistemaERPA == 3}">
+					<ui:insert name="cadPessoaLogin">
+						<ui:include src="cadPessoaLogin.xhtml" />
+					</ui:insert>
+				</p:tab>	
+				
+			</p:tabView>
+			
+			<p:outputPanel autoUpdate="true">
+				<p:commandButton action="#{pessoasCadastroMB.reset()}" value="Voltar" 
+				                 styleClass="botaoPadrao"  immediate="true"
+				                 update=":conteudoCadastros:formCadPessoas:opCadPes,:conteudoCadastros:formCadPessoas:opCadPesBusca" 
+				                 onclick="PF('modalProcessar').show()"
+				                 oncomplete="PF('modalProcessar').hide(),limparListaCursos()">
+				        <p:resetInput target="pCadPes" />   
+				    <f:setPropertyActionListener value="0" target="#{pessoasCadastroMB.tipoOperacao}"/>      
+				</p:commandButton>                 
+				                             
+				<p:commandButton action="#{pessoasCadastroMB.reset()}" value="Novo" 
+				                 styleClass="botaoPadrao"  immediate="true"
+				                 update="pCadPes,mensaCadPessoa,mensaCampoObrigatorio,:conteudoCadastros:opCadOutroTipo" 
+				                 onclick="PF('modalProcessar').show()"
+				                 oncomplete="PF('modalProcessar').hide(),limparListaCursos()">
+				        <p:resetInput target="pCadPes" /> 
+				        <p:confirm header="Confirmation" message="Atenção: Caso não salvar as alterações ou inclusão, não serão efetuadas." icon="ui-icon-alert" />        
+				</p:commandButton> 
+								                 
+				<p:commandButton action="#{pessoasCadastroMB.save()}" value="Salvar"  icon="ui-icon-disk"
+				                 styleClass="botaoPadrao"  update="pCadPes,mensaCadPessoa,mensaCampoObrigatorio" 
+				                 onclick="PF('modalProcessar').show()" oncomplete="PF('modalProcessar').hide()"/>
+				                 
+				
+				<br/>
+					
+				<h:messages id="mensaCampoObrigatorio" styleClass="campoObrigatorio" rendered="#{empty pessoasCadastroMB.mensaTela}"/>				                 
+				<br/>		
+				<p:outputLabel id="mensaCadPessoa" value="#{pessoasCadastroMB.mensaTela}" styleClass="campoObrigatorio" />
+			</p:outputPanel>  
+		</p:panel>
+		</p:outputPanel>
+	</h:form>
+	
+</h:body>
+
+	<p:dialog id="mdCadSind" header="Cadastro sindicatos" widgetVar="dlCadSind" modal="true" height="100" width="600"
+	         position="top"> 
+	              
+	   <p:outputPanel id="opCadSind">       
+	         <table>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Codigo:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+	         			<h:inputText id="cadSindCodigo" value="#{pessoasCadastroMB.pessoasSindicato.codigo}" 
+	         			              style="font-size: 10px" size="15"/>
+	         		</td>
+	         	</tr>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Cnpj:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+						<p:inputMask id="cadSindCpnj" value="#{pessoasCadastroMB.pessoasSindicato.cnpj}" mask="99.999.999/9999-99" 
+						             styleClass="campoInput">
+							<p:ajax event="change" update="cadSindCpnj"/>
+						</p:inputMask>		         			              
+	         		</td>
+	         	</tr>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Nome:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+	         			<h:inputText id="cadSindNome" value="#{pessoasCadastroMB.pessoasSindicato.nome}" 
+	         			              style="font-size: 10px" size="50"/>
+	         		</td>
+	         		
+	         	</tr>
+	         </table>         	
+	 
+
+				<p:commandButton action="#{pessoasCadastroMB.saveSindicato()}" value="Salvar"  icon="ui-icon-disk"
+				                 styleClass="botaoPadrao"  update="opCadSind,:conteudoCadastros:formCadPessoas:pCadPes"
+				                 oncomplete="PF('dlCadSind').hide()" />
+		     
+				<p:commandButton value="Voltar"  icon="ui-icon-closethick"
+				                 styleClass="botaoPadrao"  onclick="PF('dlCadSind').hide()"  immediate="true"/>
+				                 
+	            <h:messages styleClass="campoObrigatorio"/>			                 
+
+			
+			</p:outputPanel>
+	        
+	</p:dialog>  	
+	
+	<p:dialog id="mdCadFuncao" header="Cadastro funções" widgetVar="dlCadFuncao" modal="true" height="100" width="600"
+	         position="top"> 
+	       
+	   <p:outputPanel id="opCadFuncao">       
+	         <table>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Codigo:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+	         			<h:inputText id="cadFuncaoCodigo" value="#{pessoasCadastroMB.pessoasFuncao.codigo}" 
+	         			              style="font-size: 10px" size="15"/>
+	         		</td>
+	         	</tr>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Descrição:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+	         			<h:inputText id="cadFuncaoDesc" value="#{pessoasCadastroMB.pessoasFuncao.descricao}" 
+	         			              style="font-size: 10px" size="60"/>
+	         		</td>
+	         	</tr>
+	         </table>         	
+	 
+	  	</p:outputPanel>
+	  	<f:facet name="footer">
+	  		<p:outputPanel autoUpdate="true">
+				<p:commandButton action="#{pessoasCadastroMB.saveFuncao()}" value="Salvar"  icon="ui-icon-disk"
+				                 styleClass="botaoPadrao"  update="opCadFuncao,:conteudoCadastros:formCadPessoas:pCadPes"
+				                 oncomplete="PF('dlCadFuncao').hide()" />
+		     
+				<p:commandButton value="Voltar"  icon="ui-icon-closethick"
+				                 styleClass="botaoPadrao"  onclick="PF('dlCadFuncao').hide()"  immediate="true"/>
+				                 
+	            <h:messages styleClass="campoObrigatorio"/>			                 
+			</p:outputPanel>
+	   	</f:facet> 	 	        
+	</p:dialog>  	
+	
+	<p:dialog id="mdCadFgtsOcor" header="Fgts ocorrência" widgetVar="dlCadFgtsOcor" modal="true" height="100" width="600"
+	         position="top"> 
+	       
+	   <p:outputPanel id="opCadFgtsOcor">       
+	         <table>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Codigo:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+	         			<h:inputText id="CadFgtsOcorCodigo" value="#{pessoasCadastroMB.pessoasFgtsOcor.codigo}" 
+	         			              style="font-size: 10px" size="15"/>
+	         		</td>
+	         	</tr>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Descrição:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+	         			<h:inputText id="CadFgtsOcorDesc" value="#{pessoasCadastroMB.pessoasFgtsOcor.descricao}" 
+	         			              style="font-size: 10px" size="60"/>
+	         		</td>
+	         	</tr>
+	         </table>         	
+	 
+	  	</p:outputPanel>
+	  	<f:facet name="footer">
+		  	<p:outputPanel autoUpdate="true">
+				<p:commandButton action="#{pessoasCadastroMB.saveFgtsOcor()}" value="Salvar"  icon="ui-icon-disk"
+				                 styleClass="botaoPadrao"  update=":conteudoCadastros:formCadPessoas:pCadPes"
+				                 oncomplete="PF('dlCadFgtsOcor').hide()" />
+		     
+				<p:commandButton value="Voltar"  icon="ui-icon-closethick"
+				                 styleClass="botaoPadrao"  onclick="PF('dlCadFgtsOcor').hide()"  immediate="true"/>
+				                 
+	            <h:messages styleClass="campoObrigatorio"/>
+	         </p:outputPanel>   		
+	   	</f:facet> 	 	        
+	</p:dialog> 	
+	
+	<p:dialog id="mdCadAssistMed" header="Cadastro assistência médica" widgetVar="dlCadAssistMed" modal="true" height="100" width="600"
+	         position="top"> 
+	       
+	   <p:outputPanel id="opCadAssistMed">       
+	         <table>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Codigo:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+	         			<h:inputText id="CadAssistMedCodigo" value="#{pessoasCadastroMB.pessoasAssistMedica.codigo}" 
+	         			              style="font-size: 10px" size="15"/>
+	         		</td>
+	         	</tr>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Descrição:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+	         			<h:inputText id="CadAssistMedDesc" value="#{pessoasCadastroMB.pessoasAssistMedica.descricao}" 
+	         			              style="font-size: 10px" size="60"/>
+	         		</td>
+	         	</tr>
+	         </table>         	
+	 
+	  	</p:outputPanel>
+	  	<f:facet name="footer">
+		  	<p:outputPanel autoUpdate="true">
+				<p:commandButton action="#{pessoasCadastroMB.saveAssisMed()}" value="Salvar"  icon="ui-icon-disk"
+				                 styleClass="botaoPadrao"  update=":conteudoCadastros:formCadPessoas:pCadPes"
+				                 oncomplete="PF('dlCadAssistMed').hide()" />
+		     
+				<p:commandButton value="Voltar"  icon="ui-icon-closethick"
+				                 styleClass="botaoPadrao"  onclick="PF('dlCadAssistMed').hide()"  immediate="true"/>
+				                 
+	            <h:messages styleClass="campoObrigatorio"/>
+	        </p:outputPanel>     		
+	   	</f:facet> 	 	        
+	</p:dialog> 	
+	
+	<p:dialog id="mdCadTipoContrato" header="Cadastro tipo contrato" widgetVar="dlCadTipoContrato" modal="true" height="100" width="600"
+	         position="top"> 
+	       
+	   <p:outputPanel id="opCadTipoContrato">       
+	         <table>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Codigo:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+	         			<h:inputText id="CadTipoContratoCod" value="#{pessoasCadastroMB.pessoasTipoContrato.codigo}" 
+	         			              style="font-size: 10px" size="15"/>
+	         		</td>
+	         	</tr>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Descrição:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+	         			<h:inputText id="CadTipoContratoDesc" value="#{pessoasCadastroMB.pessoasTipoContrato.descricao}" 
+	         			              style="font-size: 10px" size="60"/>
+	         		</td>
+	         	</tr>
+	         </table>         	
+	 
+	  	</p:outputPanel>
+	  	<f:facet name="footer">
+		  	<p:outputPanel autoUpdate="true">
+				<p:commandButton action="#{pessoasCadastroMB.saveTipoContrato()}" value="Salvar"  icon="ui-icon-disk"
+				                 styleClass="botaoPadrao"  update=":conteudoCadastros:formCadPessoas:pCadPes"
+				                 oncomplete="PF('dlCadTipoContrato').hide()" />
+		     
+				<p:commandButton value="Voltar"  icon="ui-icon-closethick"
+				                 styleClass="botaoPadrao"  onclick="PF('dlCadTipoContrato').hide()"  immediate="true"/>
+				                 
+	            <h:messages styleClass="campoObrigatorio"/>
+	        </p:outputPanel>     		
+	   	</f:facet> 	 	        
+	</p:dialog> 	
+	
+	<p:dialog id="mdCadHorario" header="Cadastro horarios" widgetVar="dlCadHorario" modal="true" height="100" width="600"
+	         position="top"> 
+	       
+	   <p:outputPanel id="opCadHorario">       
+	         <table>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Descrição:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+	         			<h:inputText id="CadHorario" value="#{pessoasCadastroMB.pessoasHorarios.descricao}" 
+	         			              style="font-size: 10px" size="60"/>
+	         		</td>
+	         	</tr>
+	         </table>         	
+	 
+	  	</p:outputPanel>
+	  	<f:facet name="footer">
+		  	<p:outputPanel autoUpdate="true">
+				<p:commandButton action="#{pessoasCadastroMB.savePessoaHorarios()}" value="Salvar"  icon="ui-icon-disk"
+				                 styleClass="botaoPadrao"  update=":conteudoCadastros:formCadPessoas:pCadPes"
+				                 oncomplete="PF('dlCadHorario').hide()" />
+		     
+				<p:commandButton value="Voltar"  icon="ui-icon-closethick"
+				                 styleClass="botaoPadrao"  onclick="PF('dlCadHorario').hide()"  immediate="true"/>
+				                 
+	            <h:messages styleClass="campoObrigatorio"/>
+	        </p:outputPanel>     		
+	   	</f:facet> 	 	        
+	</p:dialog> 	
+	
+	<p:dialog id="dSerasaRetorno" header="Retorno serasa" widgetVar="wgSerasaRetorno" modal="true" height="400" width="600"
+	         position="top"> 
+	       
+	   <p:outputPanel id="opSerasaRetorno" autoUpdate="true">   
+	         <table>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Campos inválidos para cadastro" styleClass="campoObrigatorio"
+	         			               style="font-size: 10px; font-weight: bold"
+	         			               rendered="#{empty pessoasCadastroMB.pessoas.nome}"/>
+	         		</td>	          	
+	         	</tr>
+	         </table> 	       
+	         <table>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Retorno:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+	         			<h:inputTextarea id="serasaRetornoConsulta" value="#{pessoasCadastroMB.serasaCadastro.consulta_COMPLETA}" 
+	         			              style="font-size: 10px" cols="80" rows="35"/>
+	         		</td>
+	         	</tr>
+	         </table>         	
+	 
+	  	</p:outputPanel>
+	  	<f:facet name="footer">
+		  	<p:outputPanel autoUpdate="true">
+				<p:commandButton value="Voltar"  icon="ui-icon-closethick"
+				                 styleClass="botaoPadrao"  onclick="PF('wgSerasaRetorno').hide()"  immediate="true"/>
+				                 
+	            <h:messages styleClass="campoObrigatorio"/>
+	        </p:outputPanel>     		
+	   	</f:facet> 	 	        
+	</p:dialog> 
+	
+	<p:dialog id="dSerasaCredito" header="Retorno serasa crédito" widgetVar="wgSerasaCredito" modal="true" height="450" width="700"
+	         position="top"> 
+	       
+	   <p:outputPanel id="opSerasaCredito" autoUpdate="true">   
+	         <table>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Data:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>
+	         		<td>
+	         			<h:outputLabel value="#{pessoasCadastroMB.serasaCredito.dataInclusao}" 
+	         			               style="font-size: 10px; font-weight: bold">
+							<f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/> 		             
+				        </h:outputLabel>		         		
+	         		</td>	          	
+	         	</tr>
+	         </table> 
+	         <table>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Limite: R$" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>
+	         		<td>
+	         			<h:outputLabel value="#{pessoasCadastroMB.serasaCredito.limite}" 
+	         			               style="font-size: 10px; font-weight: bold"/>	         		
+	         		</td>	          	
+	         	</tr>
+	         </table> 
+	         <table>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Mensagem:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+	         			<h:inputTextarea id="serasaMensaCredito" value="#{pessoasCadastroMB.serasaCredito.msge_DESC}" 
+	         			              style="font-size: 10px" cols="80" rows="15" readonly="true"/>
+	         		</td>
+	         	</tr>
+	         </table> 	         	         	       
+	         <table>
+	         	<tr>
+	         		<td width="10%">
+	         			<h:outputLabel value="Dados politicos:" 
+	         			               style="font-size: 10px; font-weight: bold"/>
+	         		</td>	          	
+	         		<td>
+	         			<h:inputTextarea id="serasaRetornoCredito" value="#{pessoasCadastroMB.serasaCredito.consulta_COMPLETA}" 
+	         			              style="font-size: 10px" cols="80" rows="35" readonly="true"/>
+	         		</td>
+	         	</tr>
+	         </table>         	
+	 
+	  	</p:outputPanel>
+	  	<f:facet name="footer">
+				<p:commandButton value="Voltar"  icon="ui-icon-closethick"
+				                 styleClass="botaoPadrao"  onclick="PF('wgSerasaCredito').hide()"  immediate="true"/>
+   		
+	   	</f:facet> 	 	        
+	</p:dialog> 	
+	<p:dialog id="mdCadSalvarOutroTipo" header="Confirmar um cadastro existente, nesse tipo de pessoa:" widgetVar="dlCadSalvarOutroTipo" modal="true" height="100" width="300"
+	         position="top" dynamic="true"> 
+	       
+	   <p:outputPanel id="opCadOutroTipo">       
+	         <table>
+	         	<tr>
+	         		<td>
+	         			<h:outputLabel value="A pessoa " 
+	         			               style="font-size: 10px; font-weight: bold;"/>
+	         		</td>	          	
+	         		<td>
+						<h:outputLabel value="#{pessoasCadastroMB.pessoasValidador.nome}" 
+	         			               style="font-size: 10px; font-weight: bold;"/>	         		
+	         		</td>
+	         	</tr>	
+	        </table>
+	        <table> 	         
+	         	<tr>
+	         		<td>
+	         			<h:outputLabel value="Já esta cadastrada no sistema, como: " 
+	         			               style="font-size: 10px; font-weight: bold;"/>
+	         		</td>	          	
+	         		<td>
+						<h:outputLabel value="#{pessoasCadastroMB.pessoasValidador.descricaoHistorico}" 
+	         			               style="font-size: 10px; font-weight: bold;"/>	         		
+	         		</td>
+	         	</tr>	         
+            </table>
+            <table>    
+	         	<tr>
+	         		<td colspan="2">
+	         			<h:outputLabel value="Deseja cadastrar, nesse tipo de pessoa:" 
+	         			               style="font-size: 10px; font-weight: bold; color:red;"/>
+	         		</td>	          	
+	         	</tr>
+            </table>
+            <table>   
+	         	<tr>
+	         		<td>
+						<p:commandButton value="Não"  icon="ui-icon-closethick"
+						                 styleClass="botaoPadrao"  onclick="PF('mdCadSalvarOutroTipo').hide()"  immediate="true"/>
+	         		</td>	          	
+	         		<td>
+						<p:commandButton action="#{pessoasCadastroMB.setarTipoPessoa()}" value="Sim"  icon="ui-icon-disk"
+						                 styleClass="botaoPadrao"  update=":conteudoCadastros:formCadPessoas:pCadPes"
+						                 oncomplete="PF('dlCadSalvarOutroTipo').hide()" />
+	         		</td>
+	         	</tr>	 	         	
+	         </table>         	
+	 
+	  	</p:outputPanel>
+	</p:dialog> 
+	<p:remoteCommand name="limparListaCursos" update=":conteudoCadastros:formCadPessoas:tCadPes:opCadCursos">
+		<f:setPropertyActionListener  value="#{null}" target="#{gradeCursosAlunosMB.alunoSelected}"/>
+		<f:setPropertyActionListener  value="#{pessoasCadastroMB.pessoas.listaCursos}" target="#{gradeCursosAlunosMB.listaGradeCursosAlunos}"/>
+	</p:remoteCommand>
+	<p:remoteCommand name="setarPessoLogin" update=":conteudoCadastros:formCadPessoas:tCadPes:pCadUsuarioDetail">
+		<f:setPropertyActionListener value="#{usuarioAcessosMB.pessoasLogin}" target="#{pessoasCadastroMB.pessoasLogin}"/>
+	</p:remoteCommand>	
+</html>
+
+

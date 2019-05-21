@@ -1,0 +1,191 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h="http://java.sun.com/jsf/html"
+	 xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:p="http://primefaces.org/ui">
+	
+	<p:panel id="pCadPesDados" style="width:100%">
+			
+			
+			<table id="tCadPesDados">
+				<tr>
+					<td style="width: 83px"><h:outputLabel value="Situação:" styleClass="campoObrigatorio" /></td>
+					<td><p:selectOneRadio id="boxSituacao" value="#{pessoasCadastroMB.pessoas.situacao}" styleClass="selectOneMenu" style="width: 150px">
+							<f:selectItem itemLabel="Ativo" itemValue="1"  />
+							<f:selectItem itemLabel="Inativo" itemValue="0" />
+						</p:selectOneRadio></td>
+						
+					<td><h:outputLabel value="Pessoa:" styleClass="campoObrigatorio" /></td>
+					<td>
+						<p:selectOneMenu id="boxPessoaTipo" value="#{pessoasCadastroMB.pessoaTipo}"	style="width: 100px" styleClass="selectOneMenu" 
+						                 disabled="#{pessoasCadastroMB.pessoas.IDPessoa != null}">
+							<f:selectItem itemLabel="Jurídica" itemValue="J" />
+							<f:selectItem itemLabel="Física" itemValue="F" />
+							<p:ajax  update="pCadPesDados" />
+						</p:selectOneMenu>
+					</td>
+						
+					<td style="width: 1px" />
+
+					<td><!--p:commandButton  value="Detalhe alterações" styleClass="botaoPadrao" >
+							
+						</p:commandButton--></td>
+						
+				</tr>
+			</table>
+			
+			<table>
+				<tr>
+					<td style="width: 83px">
+						<h:outputLabel value="CPF:" styleClass="campoObrigatorio" rendered="#{pessoasCadastroMB.pessoaTipo == 'F'.charAt(0)}"/>
+						<h:outputLabel value="CNPJ:" styleClass="campoObrigatorio" rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}"/>
+					</td>
+					<td>
+						<p:inputMask id="pCadCpf" value="#{pessoasCadastroMB.pessoas.inscFederal}" mask="999.999.999-99" styleClass="campoInput" 
+							rendered="#{pessoasCadastroMB.pessoaTipo == 'F'.charAt(0)}" validator="validatorCPF" onkeypress="validateInput('[0-9]*')">
+								<p:ajax event="change" update="pCadCpf" />
+						</p:inputMask>
+						
+						<p:inputMask id="pCadCnpj" value="#{pessoasCadastroMB.pessoas.inscFederal}" mask="99.999.999/9999-99" styleClass="campoInput" 
+						             rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}" validator="validatorCNPJ" onkeypress="validateInput('[0-9]*')">
+								<p:ajax event="change" update="pCadCnpj"/>
+						</p:inputMask>					             
+					</td>
+
+					<td>
+						<p:commandLink  title="Consulta retorno serasa" 
+										styleClass="ui-icon ui-icon-zoomout" onclick="PF('wgSerasaRetorno').show()"
+										rendered="#{pessoasCadastroMB.pessoas.IDPessoa == null and not empty pessoasCadastroMB.serasaCadastro.consulta_COMPLETA}"/>					
+					</td>
+					 
+					<td>
+						<!-- h:outputLabel value="I.E / RG:" styleClass="campoLabelBold" /-->
+						<h:outputLabel value="RG:" styleClass="campoObrigatorio" rendered="#{pessoasCadastroMB.pessoaTipo == 'F'.charAt(0)}"/>
+						<h:outputLabel value="I.E:" styleClass="campoObrigatorio" rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}"/>
+					</td>
+					<td>
+						<p:inputText value="#{pessoasCadastroMB.pessoas.inscEstadual}" styleClass="campoInput"  onkeypress="validateInput('[0-9]*')" maxlength="20"
+						             rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}" />
+						<p:inputText value="#{pessoasCadastroMB.pessoas.inscEstadual}" styleClass="campoInput"  maxlength="20"
+						             rendered="#{pessoasCadastroMB.pessoaTipo == 'F'.charAt(0)}" onkeypress="validateInput('[0-9]*')"/>						             
+					</td>
+					<td>
+						<h:outputLabel value="Situação I.E:" styleClass="campoObrigatorio" rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}"/>					
+					</td>
+					<td>
+						<p:selectOneMenu id="boxIESit" value="#{pessoasCadastroMB.pessoas.inscEstadualDescSituacao}" style="width: 100px" styleClass="selectOneMenu"
+						                 rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}">
+							<f:selectItem itemLabel="Selecione" itemValue=""/>
+							<f:selectItem itemLabel="Ativa" itemValue="ATIVA"/>
+							<f:selectItem itemLabel="Inativa" itemValue="INATIVA"/>
+						</p:selectOneMenu>					
+					</td>
+					<td>
+						<h:outputLabel value="Insc.Municipal:" styleClass="campoLabelBold" rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}"/>
+					</td>
+					<td>
+						<p:inputText value="#{pessoasCadastroMB.pessoas.inscMunicipal}" styleClass="campoInput" rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}" 
+						             onkeypress="validateInput('[0-9]*')" maxlength="60"/>
+					</td>
+				</tr>
+			</table>			
+					
+			<table>
+				<tr>
+					<!--td style="width: 83px"><h:outputLabel value="Codigo:" styleClass="campoObrigatorio" /></td>
+					<td>
+						<p:inputText value="#{pessoasCadastroMB.pessoas.codigo}" styleClass="campoInput" 
+									readonly="true"/>
+					</td>
+					<td style="width: 100px"></td-->
+					<td style="width: 83px">
+						<h:outputLabel value="Data de Cadastro:" styleClass="campoLabelBold" /></td>
+					<td>
+						<p:inputText value="#{pessoasCadastroMB.pessoas.dataInclusao}" styleClass="campoInput" readonly="true" style="color: grey; width: 101px" >
+							<f:convertDateTime type="date" dateStyle="long" pattern="dd/MM/yyyy HH:mm" />
+						</p:inputText>
+					</td>
+					<td style="width: 83px">
+						<h:outputLabel value="Data de alteração:" styleClass="campoLabelBold" rendered="#{pessoasCadastroMB.pessoas.dataAlteracao != null}"/></td>
+					<td style="width: 150px">
+						<p:inputText value="#{pessoasCadastroMB.pessoas.dataAlteracao}" styleClass="campoInput" readonly="true" style="color: grey; width: 101px" 
+						             rendered="#{pessoasCadastroMB.pessoas.dataAlteracao != null}">
+							<f:convertDateTime type="date" dateStyle="long" pattern="dd/MM/yyyy HH:mm" />
+						</p:inputText>
+					</td>
+					<td>
+						<h:outputLabel value="Usuário alteração:" styleClass="campoLabelBold" rendered="#{pessoasCadastroMB.pessoas.dataAlteracao != null}"/></td>
+					<td>
+						<p:inputText value="#{pessoasCadastroMB.pessoas.pessoasUsuarioAlteracao.nome}" styleClass="campoInput" readonly="true" style="color: grey; width: 101px" 
+						             rendered="#{pessoasCadastroMB.pessoas.dataAlteracao != null}">
+							<f:convertDateTime type="date" dateStyle="long" pattern="dd/MM/yyyy HH:mm" />
+						</p:inputText>
+					</td>					
+									
+				</tr>
+			</table>
+			
+			<table>
+				<tr>
+					<td style="width: 83px">
+					<h:outputLabel value="Nome:" styleClass="campoObrigatorio" rendered="#{pessoasCadastroMB.pessoaTipo == 'F'.charAt(0) }" />
+					<h:outputLabel value="Razão Social:" styleClass="campoObrigatorio" rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0) }" /></td>		
+	
+					<td colspan="2">
+						<p:inputText value="#{pessoasCadastroMB.pessoas.nome}" styleClass="campoInput" size="82" maxlength="60"/>
+					</td>
+				</tr>
+				<tr>
+					<td><h:outputLabel value="Nome Fantasia:" styleClass="campoLabelBold" rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}"/></td>
+					<td>
+						<p:inputText value="#{pessoasCadastroMB.pessoas.apelido}" styleClass="campoInput" size="82" rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}" 
+						             maxlength="60"/>
+					</td>
+				</tr>
+			
+			</table>
+
+			
+			<table>
+				<tr>
+					<td style="width: 83px"><h:outputLabel value="País:" styleClass="campoLabelBold" /></td>
+						<td>
+							<p:selectOneMenu id="boxPessoaPais" value="#{pessoasCadastroMB.pessoaPais}"	style="width: 100px" styleClass="selectOneMenu">
+								<f:selectItems value="#{tabelasComumMB.selectPais}"/>
+							</p:selectOneMenu>
+					</td>
+					
+					<td ><h:outputLabel value="Idioma:" styleClass="campoLabelBold"/>
+					</td>
+					<td style="width: 120px">
+						<p:selectOneMenu id="boxPessoaIdioma" value="#{pessoasCadastroMB.pessoaIdioma}" style="width: 120px" styleClass="selectOneMenu">
+							<f:selectItems value="#{tabelasComumMB.selectIdiomas}"/>
+						</p:selectOneMenu>
+					</td>
+					<td>
+						<h:outputText value="Descrição do Segmento de Mercado" styleClass="selectOneMenu" />
+					</td>
+					<td>
+						<p:selectOneMenu id="boxPedTpPesSegMer" value="#{pessoasCadastroMB.pessoas.tipoPessoaSegmentoMercado}"
+							                 style="width: 200px" styleClass="selectOneMenu" converter="tipoPessoaSegMercadoConverter">
+									<f:selectItems value="#{tabelasComumMB.selectPessoaSegmentoMercados}" var="tpPCont" itemLabel="#{tpPCont.descricao}" itemValue="#{tpPCont}"/>
+						</p:selectOneMenu>					
+					</td>					
+				</tr>
+			</table>
+			
+			<table>
+				<tr>
+					<td style="width: 83px"><h:outputLabel value="Home-Page:" styleClass="campoLabelBold" /></td>
+					<td>
+					   <p:inputText value="#{pessoasCadastroMB.pessoas.site}" styleClass="campoInput" size="80"/>
+					</td>
+				</tr>
+			</table>			
+
+
+
+
+	</p:panel>
+	
+</ui:fragment>

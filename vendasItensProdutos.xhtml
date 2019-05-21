@@ -1,0 +1,275 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h="http://java.sun.com/jsf/html"
+	 xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:p="http://primefaces.org/ui">
+
+
+				
+        		<p:outputPanel id="opPedVendProdItens">
+					<table>
+						<tr>
+							<td width="80px">
+								<h:outputLabel value="Produto:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+								<p:autoComplete id="pedVenProduto" minQueryLength="1"  forceSelection="true" 
+			                 				value="#{vendasMB.produtoSelected}" effect="fade"  
+			                 				var="prod" itemLabel="#{prod.descricao}" itemValue="#{prod}" 
+			                 				completeMethod="#{produtosMB.completeProdutos}" converter="prodVendasConverter"
+			                 				styleClass="campoInput" size="50" 
+			                 				placeholder="Para mostrar a lista toda, digitar a palavra 'todos'."
+			                 				title="Para mostrar a lista toda, digitar a palavra 'todos'.">
+			                 				
+			                 			<p:ajax event="itemSelect" listener="#{vendasMB.setarProduto()}" update="opPedVendProdItens"/>
+			               			<p:column>
+			                 			#{prod.codigo}
+			             			</p:column>
+			               			<p:column>
+			                 			#{prod.descricao}
+			             			</p:column>		
+			            		</p:autoComplete>
+						   	</td>
+							<td>
+								<h:outputLabel value="Est.Fisico:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+						 		<p:inputText id="pedVenEstFisico" value="#{vendasMB.estoqueFisico}" size="8"
+													styleClass="campoInputValor"  readonly="true"/>
+						   	</td>
+						   										<td>
+								<h:outputLabel value="Est.Reserva:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+						 		<p:inputText id="pedVenEsReserva" value="#{vendasMB.estoqueReserva}" size="8"
+													styleClass="campoInputValor"  readonly="true"/>
+						   	</td>
+							<td>
+								<h:outputLabel value="Qtde:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+						 		<p:inputText id="pedVenQtde" value="#{vendasMB.qtdeVendas}" size="8"
+											 styleClass="campoInputValor" onkeypress="validateInput('[0-9]*')" />
+						   	</td>
+						   	<td>
+								<h:outputLabel value="Un.:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+								<p:selectOneMenu id="boxPedVendUniPed" value="#{vendasMB.unidadesProdutoSelected}"
+							                 style="width: 50px" styleClass="selectOneMenu" converter="unidProdSelConverter">
+									<f:selectItems value="#{tabelasComumMB.selectUnidProdutos}" var="unidProd" itemLabel="#{unidProd.codigo}" itemValue="#{unidProd}"/>
+								</p:selectOneMenu>
+						   	</td>							   	
+						</tr> 		
+					</table>	
+					<table>
+						<tr>
+							<td width="80px">
+								<h:outputLabel value="Valor:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+						 		<p:inputText id="pedVenValor" value="#{vendasMB.valorVendas}" size="10"
+											 styleClass="campoInputValor" onkeypress="validateInputNumberVirgula('[0-9]*')" >
+				                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+				        		</p:inputText>				          	 
+						   	</td>
+						   <td>
+								<h:outputLabel value="Desc.Tipo:" style="font-size: 10px"/>
+							</td>
+						   	<td>
+								<p:selectOneMenu id="boxTipoDesc" value="#{vendasMB.tipoDesconto}"	style="width: 100px" styleClass="selectOneMenu">
+									<f:selectItem itemLabel="Valor" itemValue="F" />
+									<f:selectItem itemLabel="Porcentagem" itemValue="P" />
+									<p:ajax  event="change" update="boxTipoDesc"/>
+								</p:selectOneMenu>
+						   	</td>
+						   	<td>
+						 		<p:inputText id="pedVenDescValor" value="#{vendasMB.valorDescItem}" size="8"
+											 styleClass="campoInputValor" onkeypress="validateInput('[0-9]*')"/>													
+						   	</td>
+						     <td >
+							 		<h:outputLabel value="Vendedor: " styleClass="campoObrigatorio" style="font-size: 10px"
+							 		               rendered="#{dadosSistemaMB.qualSistemaERPA == 1}"/>
+							 	</td>
+							 	<td>
+									<p:autoComplete id="pedVenVendedor" minQueryLength="1"   
+						                 				value="#{vendasMB.vendedorSelected}" effect="fade"  
+						                 				var="pe" itemLabel="#{pe.pessoas.nome}" itemValue="#{pe}" 
+						                 				completeMethod="#{pessoasCadastroMB.completePessoasVendedor}" converter="pessoaTipoVendedorConverter"
+						                 				styleClass="campoInput" size="40" 
+						                 				placeholder="Para mostrar a lista toda, digitar a palavra 'todos'."
+						                 				title="Para mostrar a lista toda, digitar a palavra 'todos'."
+						                 				rendered="#{dadosSistemaMB.qualSistemaERPA == 1}">
+						                 		
+						                 	<p:ajax event="itemSelect"  update="pedVenVendedor"/>			
+						               		<p:column>
+						                 			#{pe.pessoas.nome}
+						             		</p:column>		
+						            </p:autoComplete>		        	                    				     	
+								</td>								   	
+						</tr> 		
+					</table>	
+					<table>
+						<tr>
+							<td width="80px">
+						 		<h:outputLabel value="CFOP:" style="font-size: 10px"/>													
+						   	</td>
+						   	<td>
+								<p:autoComplete id="pedVenCfop" minQueryLength="1"  forceSelection="true" 
+			                 				value="#{vendasMB.impCfopSelected}" effect="fade"  
+			                 				var="cfop" itemLabel="#{cfop.descComCfop}" itemValue="#{cfop}" 
+			                 				completeMethod="#{tabelasComumImpMB.completeImpCfop}" converter="impCfopConverter"
+			                 				styleClass="campoInput" size="100" onkeypress="validateInput('[0-9]*')"
+			                 				scrollHeight="300">
+			                 			<p:ajax event="itemSelect" update="pedVenCfop"/>
+			               			<p:column>
+			               				<h:outputLabel value="#{cfop.cfop}" styleClass="campoLabelBold" />
+			             			</p:column>
+			               			<p:column>
+			               				<h:outputLabel value="#{cfop.descricao}" styleClass="campoLabel" />	               			
+			             			</p:column>
+			               			<p:column>
+			               				<h:outputLabel value="#{cfop.aplicacao}" styleClass="campoLabel" />	               			
+			             			</p:column>						             					
+			            		</p:autoComplete>
+						   	</td>	
+
+						   	<td>
+						   		<p:commandLink  title="Incluir produto" action="#{vendasMB.addPedidosItens}"
+					        			         styleClass="ui-icon ui-icon-circle-plus" 
+					        			         update=":conteudoNegocios:fPedVendas:opPedVendProdItens" 
+					        			         oncomplete="js_SET_FINANCEIRO()"
+					        			         rendered="#{vendasMB.pedidos.dataEfetivado == null}">  
+				                	<f:setPropertyActionListener value="REM_PARC" target="#{financeiroMB.comando}"/>	   	               
+					        	</p:commandLink>		         
+            				   	</td>				
+						</tr> 		
+					</table>													
+				    <p:dataTable id="dtPedVendProd" var="item" value="#{vendasMB.listaPedItensProdutos}"  rows="10"  
+				                 paginator="true"  paginatorAlwaysVisible="no" paginatorPosition="bottom" rowIndexVar="linha"
+				                 emptyMessage="Sem registro." tableStyle="font-size: 10px; width:100%;">
+			
+			
+						        <p:column headerText="Qtde" style="width:5%">  
+						            #{item.quantidade}
+						        </p:column>  
+					
+						        <p:column headerText="Descrição" style="width:20%">  
+						            #{item.descricaoProduto}  
+						        </p:column>
+						        
+						        <p:column headerText="Ncm" style="width:5%">  
+						            #{item.produto.ncm}  
+						        </p:column>						        
+
+						        <p:column headerText="CST" style="width:5%">  
+						            #{item.impCsosnA}#{item.impCsosnB}
+						            #{item.impCstIcmsA}#{item.impCstIcmsB}  
+						        </p:column>
+						        
+						        <p:column headerText="CFOP" style="width:5%">  
+						            #{item.impCfop.cfop}  
+						        </p:column>
+						        					        
+						        <p:column headerText="Valor unitário" style="width:5%; text-align:right">  
+						            <h:outputText value="#{item.valorUnitario}">
+						                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+						            </h:outputText>		        
+						            
+						        </p:column>  	
+					
+						        <p:column headerText="Valor total" style="width:5%; text-align:right">  
+						            <h:outputText value="#{item.valorTotal}" >
+						                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+						            </h:outputText>		        
+						             
+						        </p:column>  	        
+		
+						        <p:column headerText="Desconto item" style="width:5%; text-align:right">  
+						            <h:outputText value="#{item.valorDesconto}">
+						                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+						            </h:outputText>		
+						            <p:spacer width="5px"/> 
+						            <h:outputText value="(#{item.percDesconto})" >
+						                  <f:convertNumber locale="pt_BR" minFractionDigits="2" />
+						            </h:outputText>
+						            <h:outputText value="%"/>
+						        </p:column> 
+						        
+						        <p:column headerText="Desc.Ped.Total" style="width:5%; text-align:right">  
+						            <h:outputText value="#{item.valorDescontoPedido}">
+						                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+						            </h:outputText>		
+						            <p:spacer width="5px"/> 
+						            <h:outputText value="(#{item.percDescontoPedido})" >
+						                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+						            </h:outputText>
+						            <h:outputText value="%"/>
+						        </p:column> 					        
+						        
+						        <p:column headerText="Valor c/desconto" style="width:5%; text-align:right">  
+						            <h:outputText value="#{item.valorComDesconto}" >
+						                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+						            </h:outputText>		        
+						             
+						        </p:column>  					        
+						        
+						        <p:column headerText="Vendedor" style="width:5%; text-align:right">  
+						            <h:outputText value="#{item.pessoaVendedor.nome}" >
+						            </h:outputText>		        
+						        </p:column>  									        
+						        
+						        <p:column headerText="Ação" style="width:10%">  
+						           <p:commandButton action="#{vendasMB.remPedidosItens()}" icon="ui-icon-closethick"
+						                            update=":conteudoNegocios:fPedVendas:opPedVendProdItens,
+						                                    :conteudoNegocios:fPedVendas:opPedVendProdFinan"
+						                            oncomplete="js_SET_FINANCEIRO()"
+						                            rendered="#{vendasMB.pedidos.dataEfetivado == null}">  
+						                <f:setPropertyActionListener value="#{item}" target="#{vendasMB.pedidosItemSelected}"/>   
+						                <f:setPropertyActionListener value="REM_PARC" target="#{financeiroMB.comando}"/>   
+						           </p:commandButton>				        
+						        </p:column>    	   
+			
+	
+				 
+				    </p:dataTable>			
+					<p:separator /> 
+						<table>
+							<tr>
+								<td width="80px">
+									<h:outputLabel value="Total itens:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenVSDescontos" value="#{vendasMB.valorTotalItensProd}" size="15"
+														styleClass="campoInputValor" readonly="true">
+					                  	<f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+					            	</p:inputText>				            
+							   	</td>						  	
+								<td width="80px">
+									<h:outputLabel value="Total descontos:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenVDescontos" value="#{vendasMB.valorTotalDesc}" size="15"
+														styleClass="campoInputValor" readonly="true">
+					                  	<f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+					            	</p:inputText>
+							   	</td>
+							   	<td>
+									<h:outputLabel value="(Comissões+Frete)" style="font-size: 10px"/>
+								</td>
+								<td width="80px">
+									<h:outputLabel value="Total pedido:" style="font-size: 10px"/>
+								</td>
+							   	<td>
+							 		<p:inputText id="pedVenVTotPedido" value="#{vendasMB.valorTotal}" size="15"
+														styleClass="campoInputValor" readonly="true">
+					                  	<f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+					            	</p:inputText>
+							   	</td>						  	
+				  			</tr>	
+						</table>					
+
+				</p:outputPanel>				   						
+				
+	
+</ui:fragment>

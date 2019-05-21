@@ -1,0 +1,203 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:head>
+		<h:outputStylesheet library="css" name="commom.css" />
+		<h:outputScript  library="js" name="funcoes.js"/>
+	</h:head>
+
+<h:body>
+	<h:form id="formCadPessoasSimples">
+		<p:outputPanel id="opCadPesBusca">
+		<p:panel id="pCadPesBusca" header="Busca no cadastro de colaboradores." style="width:100%" rendered="#{pessoasCadastroMB.tipoOperacao == 0}">
+			<table style="width: 900px">
+				<tr>
+				
+				    <td style="width:80px">
+				    	<h:outputLabel value="Filtros:" styleClass="campoObrigatorio" />
+				    </td>
+					<td>
+						<p:selectOneMenu id="boxFiltroPessoa" value="#{pessoasCadastroMB.systemSearchSelected}" style="width: 100px" 
+						                 styleClass="selectOneMenu" converter="tipoSystemSearchConverter">
+							 <f:selectItems value="#{systemSearchMB.selecSystemSearchs}" var="sySearch" itemLabel="#{sySearch.descricao}" itemValue="#{sySearch}"/>
+							 <p:ajax event="change" update="boxFiltroPessoa"/>
+						</p:selectOneMenu>				
+					</td>				
+					
+					<td>
+						<p:inputText value="#{pessoasCadastroMB.systemSearchConteudo}" styleClass="campoInput" size="80" />
+					</td>
+						
+					<td>
+			  			<p:commandButton title="Listar resultado" value="Buscar"
+			  			                 action="#{pessoasCadastroMB.getListaPessoasBusca}"
+			   			         icon="ui-icon ui-icon-circle-zoomin" onclick="PF('modalProcessar').show()"
+			   			         update="dtPessoaBuscaSimples" oncomplete="PF('modalProcessar').hide()"/>					
+					</td>
+					<td>
+						<p:commandButton value="Novo" 
+						                 styleClass="botaoPadrao"  immediate="true"
+						                 update=":conteudoCadastros:formCadPessoasSimples:opCadPes,:conteudoCadastros:formCadPessoasSimples:opCadPesBusca" 
+						                 onclick="PF('modalProcessar').show()"
+						                 oncomplete="PF('modalProcessar').hide()">
+						    <f:setPropertyActionListener value="1" target="#{pessoasCadastroMB.tipoOperacao}"/>      
+						</p:commandButton>					
+					</td>
+				</tr>	
+			</table>	   
+			
+		    <p:dataTable id="dtPessoaBuscaSimples" widgetVar="wdPessoaBuscaSimples" value="#{pessoasCadastroMB.dataModelPessoasTipo}"
+		                filteredValue="#{pessoasCadastroMB.filterPessoasTipoBusca}"  var="item"  emptyMessage="Sem registro." selectionMode="single"
+		                 scrollable="true" scrollHeight="370" scrollRows="10" 
+		                 selection="#{pessoasCadastroMB.pPessoaTipoSelected}" rowKey="#{item}"
+		                 tableStyle="font-size: 10px;" style="width:900px;">  
+		
+		        <p:ajax event="rowSelect" listener="#{pessoasCadastroMB.getColaboradorSelected}"
+		                update=":conteudoCadastros:formCadPessoasSimples:opCadPes,:conteudoCadastros:formCadPessoasSimples:opCadPesBusca" />  
+		                        
+			    <p:column headerText="Data cadastro" style="width:10%" >  
+		   			<h:outputLabel value="#{item.pessoas.dataInclusao}">
+						<f:convertDateTime pattern="dd/MM/yyyy"/> 		             
+			        </h:outputLabel>	
+		        </p:column>      
+
+		        <p:column headerText="Registro" style="width:10%" >  
+		            <h:outputLabel value="#{item.pessoas.registro}"/>
+		        </p:column>
+		        		
+		        <p:column headerText="Nome" style="width:50%"   filterBy="#{item.pessoas.nome}" filterMatchMode="contains" sortBy="#{item.pessoas.nome}" >  
+		            <h:outputLabel value="#{item.pessoas.nome}"/>
+		        </p:column>  
+		       
+		        <p:column headerText="CPF" style="width:15%" >  
+		            <h:outputLabel value="#{item.pessoas.inscFederal}"/>
+		        </p:column>		        
+		        
+		        <p:column headerText="RG" style="width:15%" >  
+		            <h:outputLabel value="#{item.pessoas.inscEstadual}"/>
+		        </p:column>		        		    
+	                      		        
+		    </p:dataTable>			
+		</p:panel>
+		</p:outputPanel>
+		<p:outputPanel id="opCadPes">
+		<p:panel id="pCadPes" header="Cadastro de Colaborador" style="width:100%" rendered="#{pessoasCadastroMB.tipoOperacao != 0}">
+
+			<p:tabView id="tCadPes" effect="fade" effectDuration="normal" style="width:100%;" >
+
+				<p:tab id="dadosPessoais" title="Dados gerais">
+					<ui:insert name="cadPessoaContato">
+						<ui:include src="cadPessoaDadosPessoaisSimples.xhtml" />
+						<ui:include src="cadPessoaVendedor.xhtml" />
+						
+					</ui:insert>
+				</p:tab>
+				<p:tab id="dadosUsuarios" title="Dados login">
+					<ui:insert name="cadPessoaLogin">
+						<ui:include src="cadPessoaLogin.xhtml" />
+					</ui:insert>
+				</p:tab>	
+				
+				<p:tab id="dadosExtradoPed" title="Extrato desconto acumulativo pedido">
+					<ui:insert name="cadPessoaExtradoPed">
+						<ui:include src="cadPessoaColabExtradoPedidos.xhtml" />
+					</ui:insert>
+				</p:tab>							
+				
+			</p:tabView>
+			
+
+			<p:commandButton action="#{pessoasCadastroMB.setOpcao()}" value="Voltar" 
+			                 styleClass="botaoPadrao"  immediate="true"
+			                 update=":conteudoCadastros:formCadPessoasSimples:opCadPes,:conteudoCadastros:formCadPessoasSimples:opCadPesBusca" 
+			                 onclick="PF('modalProcessar').show()"
+			                 oncomplete="PF('modalProcessar').hide()">
+			    <f:setPropertyActionListener value="0" target="#{pessoasCadastroMB.tipoOperacao}"/>      
+			</p:commandButton>                 
+			                             
+			<p:commandButton action="#{pessoasCadastroMB.setOpcao()}" value="Novo" 
+			                 styleClass="botaoPadrao"  
+			                 update=":conteudoCadastros:formCadPessoasSimples:opCadPes,mensaCadPessoa,mensaCampoObrigatorio" 
+			                 onclick="PF('modalProcessar').show()"
+			                 oncomplete="PF('modalProcessar').hide()">
+			        <p:confirm header="Confirmation" message="Atenção: Caso não salvar as alterações ou inclusão, não serão efetuadas." icon="ui-icon-alert" />        
+			</p:commandButton> 
+							                 
+			<p:commandButton action="#{pessoasCadastroMB.saveColaboradorSimples()}" value="Salvar"  icon="ui-icon-disk"
+			                 styleClass="botaoPadrao"  
+			                 update=":conteudoCadastros:formCadPessoasSimples:opCadPes,mensaCadPessoa,mensaCampoObrigatorio,:conteudoCadastros:opCadOutroTipoCol" 
+			                 onclick="PF('modalProcessar').show()" oncomplete="PF('modalProcessar').hide()"/>
+			                 
+			
+			<br/>
+				
+			<h:messages id="mensaCampoObrigatorio" styleClass="campoObrigatorio" />				                 
+			<br/>		
+			<p:outputLabel id="mensaCadPessoa" value="#{pessoasCadastroMB.mensaTela}" styleClass="campoObrigatorio" />
+
+		</p:panel>
+		</p:outputPanel>
+	</h:form>
+	<p:dialog id="mdCadSalvarOutroTipoCol" header="Confirmar um cadastro existente, para que seja um colaborador.:" widgetVar="dlCadSalvarOutroTipoCol" modal="true" height="100" width="300"
+	         position="top" dynamic="true"> 
+	   <p:outputPanel id="opCadOutroTipoCol">       
+	         <table>
+	         	<tr>
+	         		<td>
+	         			<h:outputLabel value="A pessoa " 
+	         			               style="font-size: 10px; font-weight: bold;"/>
+	         		</td>	          	
+	         		<td>
+						<h:outputLabel value="#{pessoasCadastroMB.pessoasValidador.nome}" 
+	         			               style="font-size: 10px; font-weight: bold;"/>	         		
+	         		</td>
+	         	</tr>	
+	        </table>
+	        <table> 	         
+	         	<tr>
+	         		<td>
+	         			<h:outputLabel value="Já esta cadastrada no sistema, como: " 
+	         			               style="font-size: 10px; font-weight: bold;"/>
+	         		</td>	          	
+	         		<td>
+						<h:outputLabel value="#{pessoasCadastroMB.pessoasValidador.descricaoHistorico}" 
+	         			               style="font-size: 10px; font-weight: bold;"/>	         		
+	         		</td>
+	         	</tr>	         
+            </table>
+            <table>    
+	         	<tr>
+	         		<td colspan="2">
+	         			<h:outputLabel value="Deseja cadastrar, como colaborador." 
+	         			               style="font-size: 10px; font-weight: bold; color:red;"/>
+	         		</td>	          	
+	         	</tr>
+            </table>
+            <table>   
+	         	<tr>
+	         		<td>
+						<p:commandButton value="Não"  icon="ui-icon-closethick"
+						                 styleClass="botaoPadrao"  onclick="PF('dlCadSalvarOutroTipoCol').hide()"  immediate="true"/>
+	         		</td>	          	
+	         		<td>
+						<p:commandButton action="#{pessoasCadastroMB.setarTipoPessoaCol()}" value="Sim"  icon="ui-icon-disk"
+						                 styleClass="botaoPadrao"  update=":conteudoCadastros:formCadPessoasSimples:opCadPes"
+						                 oncomplete="PF('dlCadSalvarOutroTipoCol').hide()" />
+	         		</td>
+	         	</tr>	 	         	
+	         </table>         	
+	 
+	  	</p:outputPanel>
+	</p:dialog> 	
+	<p:remoteCommand name="setarPessoLogin" update=":conteudoCadastros:formCadPessoasSimples:tCadPes:pCadUsuarioDetail">
+		<f:setPropertyActionListener value="#{usuarioAcessosMB.pessoasLogin}" target="#{pessoasCadastroMB.pessoasLogin}"/>
+	</p:remoteCommand>
+</h:body>
+
+</html>
+
+

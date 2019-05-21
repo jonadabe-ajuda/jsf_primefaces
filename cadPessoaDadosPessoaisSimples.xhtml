@@ -1,0 +1,221 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h="http://java.sun.com/jsf/html"
+	 xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:p="http://primefaces.org/ui">
+     
+     
+     
+	<table>
+		<tr>
+			<td style="width: 105px"><h:outputLabel value="CPF:" styleClass="campoObrigatorio" /></td>
+			<td style="width: 160px">
+				<p:inputMask id="cpfColab" value="#{pessoasCadastroMB.pessoas.inscFederal}" mask="999.999.999-99" styleClass="campoInput" 
+					         onkeypress="validateInput('[0-9]*')">
+					<f:validator validatorId="validatorCPF" />
+					<p:ajax event="change" update="cpfColab"/>
+				</p:inputMask>	
+												
+			</td>
+			<td><h:outputLabel value="RG:" styleClass="campoLabelBold" /></td>
+			<td style="width: 140px">
+				<p:inputText value="#{pessoasCadastroMB.pessoas.inscEstadual}" styleClass="campoInput" 
+				style="width: 120px" maxlength="20" onkeypress="validateInput('[0-9]*')"/>
+			</td>
+			<td><h:outputLabel value="Orgão Emissor:" styleClass="campoLabelBold" /></td>
+			<td style="width: 70px">
+				<p:inputText  value="#{pessoasCadastroMB.pessoas.RGOrgaoEmissor}" styleClass="campoInput" style="width: 60px" maxlength="20"/>
+			</td>
+			<td><h:outputLabel value="Data Expedição:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:calendar id="cCrmDtIni" value="#{pessoasCadastroMB.pessoas.dataExpedicao}"  showButtonPanel="true"
+								style="font-size: 10px;" size="10" pattern="dd/MM/yyyy" 
+								showOn="button"/>				
+			</td>
+		</tr>
+	</table>     
+     
+	<table>
+		<tr>
+			<td style="width: 105px"><h:outputLabel value="Nome Completo:" styleClass="campoObrigatorio" /></td>
+
+			<td style="width: 480px">
+				<p:inputText value="#{pessoasCadastroMB.pessoas.nome}" styleClass="campoInput" size="82" maxlength="60"/>
+			</td>
+
+			<td><h:outputLabel value="Data Nascimento: " styleClass="campoLabelBold" />
+				<p:calendar value="#{pessoasCadastroMB.pessoas.dataNascimento}"  showButtonPanel="true"
+											style="font-size: 10px;" size="10" pattern="dd/MM/yyyy" 
+											showOn="button"/>			
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td style="width: 105px"><h:outputLabel value="Cartão de ponto:" styleClass="campoLabelBold" /></td>
+			<td style="width: 100px">
+				<p:inputText value="#{pessoasCadastroMB.pessoas.cartaoPonto}" styleClass="campoInput" style="width: 80px" maxlength="20"/>
+			</td>
+			<td><p:selectOneRadio id="boxSexo" value="#{pessoasCadastroMB.pessoas.sexo}" styleClass="selectOneMenu" style="width: 150px">
+					<f:selectItem itemLabel="Masculino" itemValue="M"  />
+					<f:selectItem itemLabel="Feminino" itemValue="F" />
+				</p:selectOneRadio></td>
+			
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td style="width: 105px"><h:outputLabel value="Estado Civil:" styleClass="campoLabelBold" /></td>
+			<td style="width: 190px">
+				<p:selectOneMenu id="boxEstCivil" value="#{pessoasCadastroMB.pessoas.estadoCivil}"	style="width: 150px" styleClass="selectOneMenu">
+					<f:selectItem itemLabel="Selecione" itemValue="0" />
+					<f:selectItem itemLabel="Casado(a)" itemValue="1" />
+					<f:selectItem itemLabel="Solteiro(a)" itemValue="2" />
+					<f:selectItem itemLabel="Divorciado(a)" itemValue="3" />
+					<f:selectItem itemLabel="Viúvo(a)" itemValue="4"/>
+				</p:selectOneMenu></td>
+			<td><h:outputLabel value="Cútis:" styleClass="campoLabelBold" /></td>
+			<td style="width: 160px"><p:selectOneMenu id="boxCutis" value="#{pessoasCadastroMB.pessoas.cutis}"  style="width: 103px" styleClass="selectOneMenu">
+					<f:selectItem itemLabel="Selecione" itemValue="0" />
+					<f:selectItem itemLabel="Indígena" itemValue="1" />
+					<f:selectItem itemLabel="Branca" itemValue="2" />
+					<f:selectItem itemLabel="Preta" itemValue="3" />
+					<f:selectItem itemLabel="Amarela" itemValue="4" />
+					<f:selectItem itemLabel="Parda" itemValue="5" />
+					<f:selectItem itemLabel="Não Informado" itemValue="6" />
+				</p:selectOneMenu></td>
+			<td><h:outputLabel value="Naturalidade:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoas.naturalidade}" styleClass="campoInput" style="width: 103px" maxlength="20"/>
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td style="width: 105px"><h:outputLabel value="Nome da Mãe:" styleClass="campoLabelBold" /></td>
+			<td><p:inputText value="#{pessoasCadastroMB.pessoas.nomeMae}" styleClass="campoInput" style="width: 500px" maxlength="100"/></td>
+			<td><h:outputLabel value="Nacionalidade:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoas.maeNacionalidade}" styleClass="campoInput" style="width: 95px"  maxlength="20"/>
+			</td>
+		</tr>
+		<tr>
+			<td><h:outputLabel value="Nome do Pai:" styleClass="campoLabelBold" /></td>
+			<td><p:inputText value="#{pessoasCadastroMB.pessoas.nomePai}" styleClass="campoInput" style="width: 500px" maxlength="100"/></td>
+			<td><h:outputLabel value="Nacionalidade:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoas.paiNacionalidade}" styleClass="campoInput" style="width: 95px" maxlength="20"/>
+			</td>
+		</tr>
+	</table>
+	<p:separator/>
+	<table>
+		<tr>
+			<td style="width: 105px"><h:outputLabel value="CEP:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoasEndereco.cep}" styleClass="campoInput" 
+				             style="width: 100px" maxlength="10"/>
+			</td>		
+			<td><h:outputLabel value="Logradouro:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoasEndereco.endereco}" styleClass="campoInput" 
+				             style="width: 450px" maxlength="100"/>
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td style="width: 105px"><h:outputLabel value="Número:" styleClass="campoLabelBold" /></td>
+			<td style="width: 60px">
+				<p:inputText value="#{pessoasCadastroMB.pessoasEndereco.numero}" styleClass="campoInput"  style="width: 40px"
+				             maxlength="10"/>
+			</td>
+			<td><h:outputLabel value="Complemento:" styleClass="campoLabelBold" /></td>
+			<td style="width: 306px">
+				<p:inputText value="#{pessoasCadastroMB.pessoasEndereco.complemento}" styleClass="campoInput" 
+				             style="width: 300px" maxlength="100"/>
+			</td>
+			<td><h:outputLabel value="Bairro:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoasEndereco.bairro}" styleClass="campoInput" 
+				             style="width: 187px" maxlength="100"/>
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td style="width: 105px"><h:outputLabel value="Estado:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:selectOneMenu id="boxCadUf" value="#{pessoasCadastroMB.pessoasEndereco.idUf}"
+			                 style="width: 150px" styleClass="campoInput" converter="ibgeUfConverter"
+			                 valueChangeListener="#{tabelasComumMB.carregarIbgeMunicipio}" var="uf"
+			                 filter="true" filterMatchMode="startsWith">
+					<f:selectItems value="#{tabelasComumMB.selectIbgeUf}" var="ibgeUF" itemLabel="#{ibgeUF.ufSigla}" itemValue="#{ibgeUF}"/>
+					<p:ajax event="change" update="boxCadUf,acCadMunicipio" listener="#{pessoasCadastroMB.setarMunicipio}"/>
+					<p:column style="width:10%">
+		                <h:outputText value="#{uf.codigo}" />
+		            </p:column>
+		 
+		            <p:column>
+		                <h:outputText value="#{uf.ufSigla}" />
+		            </p:column>							
+				</p:selectOneMenu>						
+			</td>					
+			<td>
+				<h:outputLabel value="Cidade:" styleClass="campoLabelBold" />
+			</td>
+			<td>
+				<p:autoComplete id="acCadMunicipio" minQueryLength="1" forceSelection="true"  
+                  				value="#{pessoasCadastroMB.pessoasEndereco.idMunicipios}" effect="fade"  
+                  				var="muni" itemLabel="#{muni.nome}" itemValue="#{muni}" 
+                  				completeMethod="#{tabelasComumMB.completeIbgeMunicipios}" converter="ibgeMunicipiosConverter"
+                  				styleClass="campoInput" size="82" >
+                  	<p:ajax event="itemSelect" update="acCadMunicipio"/>	
+		            <p:column>
+		                <h:outputText value="#{muni.codigo}" />
+		            </p:column>
+		 
+		            <p:column>
+		                <h:outputText value="#{muni.nome}" />
+		            </p:column>		                  	
+                 </p:autoComplete>							
+			</td>
+
+		</tr>
+	</table>
+	<p:separator/>
+	<table>
+		<tr>
+			<td style="width: 90px"><h:outputLabel value="Email:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoasContato.emailPrincipal}" styleClass="campoInput" 
+				             style="width: 347px" maxlength="50"/>
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td style="width: 90px"><h:outputLabel value="Telefone Tipo:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:selectOneMenu id="boxTpTelefoneCol1" value="#{pessoasCadastroMB.pessoasContato.tel1Tipo}" 
+						style="width: 50px" styleClass="selectOneMenu">
+							<f:selectItem itemLabel="-SEL-" itemValue="0" />
+							<f:selectItem itemLabel="RES." itemValue="B" />
+							<f:selectItem itemLabel="CEL." itemValue="C" />
+							<f:selectItem itemLabel="COM." itemValue="T" />
+				</p:selectOneMenu>
+			</td>
+			<td><h:outputLabel value="DDD:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoasContato.tel1DDD}" styleClass="campoInput" size="2" 
+				             maxlength="5" onkeypress="validateInput('[0-9]*')"/>
+			</td>
+			<td><h:outputLabel value="Telefone:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoasContato.tel1Numero}" styleClass="campoInput" size="10" 
+				             maxlength="10" onkeypress="validateInput('[0-9]*')"/> 
+			</td>
+		</tr>
+	</table>	
+
+</ui:fragment>

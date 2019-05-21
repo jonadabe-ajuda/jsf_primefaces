@@ -1,0 +1,61 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h="http://java.sun.com/jsf/html"
+	 xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:p="http://primefaces.org/ui">
+		
+			
+		<table>
+			<tr>
+				<td>
+					<h:outputText value="Extrado de descontos acumulativos, apenas para colaboradores com função de vendedor(a)." styleClass="campoLabelBold"/>  
+				</td>
+			</tr>
+		</table>
+
+			<p:dataTable id="dtListaVendDescAcPedido" widgetVar="wdtListaVendDescAcPedido" value="#{pessoasCadastroMB.listaPessoasVendPedExtrado}"  
+		                 var="item" rowKey="linha" emptyMessage="Sem registro."
+		                 scrollable="true" scrollHeight="500" scrollRows="10" 
+		                 tableStyle="font-size: 10px;" style="width:100%;" > 
+	                       
+		  		<f:facet name="header">
+		  			<h:outputLabel value="Extrato" style="font-size: 20px" styleClass="campoAtencao"/>
+		  		</f:facet>
+		  		
+		        <p:column headerText="Dt Movimentação" style="width:10%">  
+		            <h:outputLabel value="#{item.dataMovimento}">
+		            	<f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="#{menuPrincipal.timeZone}"/>
+		            </h:outputLabel>
+		        </p:column> 	
+		        
+		        <p:column headerText="Tipo movimento" style="width:10%">  
+		            <h:outputLabel value="Cancelamento" rendered="#{item.tipoInclusao == 0}"/>
+		            <h:outputLabel value="Inclusão" rendered="#{item.tipoInclusao == 1}"/>
+		        </p:column> 
+
+		        <p:column headerText="Numero Pedido" style="width:10%">  
+		            <h:outputLabel value="#{item.pedido.numeroPedido}"/>
+		        </p:column> 
+		  		
+		        <p:column headerText="Cliente" style="width:30%">  
+		            <h:outputLabel value="#{item.pedido.pessoa.nome}"/>
+		        </p:column> 
+		        				        
+		        <p:column headerText="Valor adicionado" style="width:10%">  
+		            <h:outputLabel value="#{item.valorAdicionado} ">
+		            		<f:convertNumber locale="pt_BR" minFractionDigits="2" maxFractionDigits="2" pattern="#0.00"/>
+		            </h:outputLabel>
+		        </p:column> 	        
+		  
+		        <p:column headerText="Valor Acumulado" style="width:10%">  
+		            <h:outputLabel value="#{item.valorAcumulativo} ">
+		            		<f:convertNumber locale="pt_BR" minFractionDigits="2" maxFractionDigits="2" pattern="#0.00"/>
+		            </h:outputLabel>
+		        </p:column> 			 
+		 
+		 
+		    </p:dataTable>
+		
+			
+			
+</ui:fragment>

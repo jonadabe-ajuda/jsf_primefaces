@@ -1,0 +1,254 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h="http://java.sun.com/jsf/html"
+	 xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:p="http://primefaces.org/ui">
+     
+	<p:outputPanel id="opCadColContato">
+		<table>
+			<tr>
+				<td style="width: 90px"><h:outputLabel value="Email:" styleClass="campoLabelBold" /></td>
+				<td>
+					<p:inputText value="#{pessoasCadastroMB.pessoasContato.emailPrincipal}" styleClass="campoInput" 
+					             style="width: 347px" maxlength="50"/>
+				</td>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<td style="width: 90px"><h:outputLabel value="Telefone Tipo:" styleClass="campoLabelBold" /></td>
+				<td>
+					<p:selectOneMenu id="boxTpTelefoneCol1" value="#{pessoasCadastroMB.pessoasContato.tel1Tipo}" 
+							style="width: 50px" styleClass="selectOneMenu">
+								<f:selectItem itemLabel="-SEL-" itemValue="0" />
+								<f:selectItem itemLabel="RES." itemValue="B" />
+								<f:selectItem itemLabel="CEL." itemValue="C" />
+								<f:selectItem itemLabel="COM." itemValue="T" />
+					</p:selectOneMenu>
+				</td>
+				<td><h:outputLabel value="DDD:" styleClass="campoLabelBold" /></td>
+				<td>
+					<p:inputText value="#{pessoasCadastroMB.pessoasContato.tel1DDD}" styleClass="campoInput" size="2" 
+					             maxlength="5" onkeypress="validateInput('[0-9]*')"/>
+				</td>
+				<td><h:outputLabel value="Telefone:" styleClass="campoLabelBold" /></td>
+				<td>
+					<p:inputText value="#{pessoasCadastroMB.pessoasContato.tel1Numero}" styleClass="campoInput" size="10" 
+					             maxlength="10" onkeypress="validateInput('[0-9]*')"/> 
+				</td>
+				<td>
+					<p:commandButton action="#{pessoasCadastroMB.addContatoColaborador()}" 
+					                 value="Adicionar contato" styleClass="botaoPadrao"
+					                 update="dtGridDadPessCont,opCadColContato" />
+				</td>
+			</tr>
+		</table>
+	</p:outputPanel>
+	<p:dataTable id="dtGridDadPessCont" value="#{pessoasCadastroMB.listaPessoasContatos}" rows="4" 
+		style="width: 444px" var="item" tableStyleClass="tableOfContents" emptyMessage="Nenhum registro encontrado." >
+		<p:column style="width:40%" styleClass="tableTitle" headerText="Email">
+			<p:outputLabel value="#{item.emailPrincipal}" styleClass="tableOfContents"/>
+		</p:column>
+		<p:column style="width:40%" styleClass="tableTitle" headerText="Telefone">
+			<p:outputLabel value="#{item.tel1DDD}" styleClass="tableOfContents"/>-
+			<p:outputLabel value="#{item.tel1Numero}" styleClass="tableOfContents"/>
+			<p:outputLabel value="(RESIDENCIAL)" styleClass="tableOfContents" rendered="#{item.tel1Tipo == 'B'}"/>
+			<p:outputLabel value="(CELULAR)" styleClass="tableOfContents" rendered="#{item.tel1Tipo == 'C'}"/>
+			<p:outputLabel value="(COMERCIAL)" styleClass="tableOfContents" rendered="#{item.tel1Tipo == 'T'}"/>
+		</p:column>
+		<p:column style="width:20px" styleClass="tableTitle" headerText="Ação">
+				<p:commandLink action="#{pessoasCadastroMB.removeContato}" title="Remove contato" immediate="true"
+				                 styleClass="ui-icon ui-icon-closethick" update="dtGridDadPessCont">
+					    <f:setPropertyActionListener  value="#{item}"
+	            		                              target="#{pessoasCadastroMB.pContatoSelected}"/>         
+	             </p:commandLink>
+		</p:column>							
+	</p:dataTable>
+	<p:spacer height="10px" />
+	<p:separator />
+	<p:spacer height="10px" />
+	<table>
+		<tr>
+			<td><h:outputLabel value="Escolaridade:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:selectOneMenu id="boxEscol" value="#{pessoasCadastroMB.pessoas.pessoasDados.idPessoasEscolaridade}"	style="width: 500px" styleClass="selectOneMenu">
+				    <f:selectItem itemLabel="Selecione" itemValue="0"/>
+					<f:selectItems value="#{tabelasComumMB.selectEscolaridades}"/>
+				</p:selectOneMenu>
+			</td>
+		</tr>
+		<tr>
+			<td><h:outputLabel value="Tipo de Contrato:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:selectOneMenu id="boxTipContr" value="#{pessoasCadastroMB.pessoas.pessoasDados.idPessoasTipoContrato}"	style="width: 500px" styleClass="selectOneMenu">
+					<f:selectItem itemLabel="Selecione" itemValue="0"/>
+					<f:selectItems value="#{tabelasComumMB.selectContratos}"/>
+					 <p:ajax event="change" update="boxTipContr"/>
+				</p:selectOneMenu>
+			</td>
+			<td>
+				<p:commandButton immediate="true" icon="ui-icon-plus" styleClass="botaoPadrao" onclick="PF('dlCadTipoContrato').show()" title="Cadastrar Tipo de Contrato"/>
+				<p:commandButton action="#{pessoasCadastroMB.remTipoContrato}" update=":conteudoCadastros:formCadPessoas:pCadPes" 
+				                 immediate="true" icon="ui-icon-minus" styleClass="botaoPadrao" title="Excluir Tipo de Contrato selecionado" />				
+			</td>	
+		</tr>
+	</table>
+	<p:spacer height="10px" />
+	<p:separator />
+	<p:spacer height="10px" />
+	<p:outputPanel id="opFuncao">
+		<table>
+			<tr>
+				<td><h:outputLabel value="Função:" styleClass="campoLabelBold" /></td>
+				<!-- opções para cadastro -->
+				<td>
+						<p:selectOneMenu id="boxFuncao" value="#{pessoasCadastroMB.pFuncaoSelected}" immediate="true"
+					                 style="width: 200px" styleClass="selectOneMenu" converter="pessoasFuncaoConverter" >
+					        <!--f:selectItem itemLabel="Selecione" itemValue="#{null}"/-->         
+							<f:selectItems value="#{tabelasComumMB.selectPessoasFuncoes}" var="funcao" itemLabel="#{funcao.descricao}" itemValue="#{funcao}"/>
+							<p:ajax event="change" update="boxFuncao" immediate="true"/>
+						</p:selectOneMenu>		
+											
+				</td>
+				<td>
+					<p:commandButton immediate="true" icon="ui-icon-plus" styleClass="botaoPadrao" onclick="PF('dlCadFuncao').show()" title="Cadastrar Função"/>
+					<p:commandButton action="#{pessoasCadastroMB.remFuncao}" update="opFuncao" 
+					                 immediate="true" icon="ui-icon-minus" styleClass="botaoPadrao" title="Excluir Função selecionada" />				
+				</td>				
+				<td><h:outputLabel value="Área:" styleClass="campoLabelBold" /></td>
+				<td>
+			 
+					<p:autoComplete id="funcaoArea" minQueryLength="1" forceSelection="true"  
+			                  				value="#{pessoasCadastroMB.areaSelected}" effect="fade"  
+			                  				var="depto" itemLabel="#{depto.descricao}" itemValue="#{depto}" 
+			                  				completeMethod="#{cadastroAreaDeptoMB.completeArea}" converter="departamentoConverter" 
+			                  				styleClass="campoInput" size="25" >
+			                  				
+			                  	<p:ajax event="itemSelect" update="funcaoArea" listener="#{cadastroAreaDeptoMB.setarArea}" />	
+			                	<p:column>
+			                  			#{depto.seAreaDepto} - #{depto.descricao}
+			         			</p:column>
+			         </p:autoComplete>
+	
+				</td>
+				<td><h:outputLabel value="Departamento:" styleClass="campoLabelBold" /></td>
+				<td>
+
+					<p:autoComplete id="funcaoDepto" minQueryLength="1"  forceSelection="true"  
+				                  				value="#{pessoasCadastroMB.deptoSelected}" effect="fade"  
+				                  				var="depto" itemLabel="#{depto.descricao}" itemValue="#{depto}" 
+				                  				completeMethod="#{cadastroAreaDeptoMB.completeDepto}" converter="departamentoConverter"
+				                  				styleClass="campoInput" size="25" >
+				                  				
+				                  	<p:ajax event="itemSelect" update="funcaoDepto" />	
+				                	<p:column>
+				                  			#{depto.seAreaDepto} - #{depto.descricao}
+				         			</p:column>
+			         </p:autoComplete>			         
+				</td>
+				<td><h:outputLabel value="Início:" styleClass="campoLabelBold" /></td>
+				<td>
+					<p:calendar value="#{pessoasCadastroMB.dataBuscaInicio}"  showButtonPanel="true"
+								style="font-size: 10px;" size="10" pattern="dd/MM/yyyy" 
+								showOn="button"/>
+				</td>
+				
+				<td>
+					<p:commandButton action="#{pessoasCadastroMB.addFuncoes()}" 
+					                 value="Adicionar Função"  styleClass="botaoPadrao"
+					                 update="dtGridPessFuncao,opFuncao" />
+				</td>
+			</tr>
+		</table>
+	</p:outputPanel>
+	<p:spacer height="10px" />
+	<p:dataTable id="dtGridPessFuncao" value="#{pessoasCadastroMB.listaPessoaDadosFuncoes}" rows="5" 
+		style="width: 800px" var="resultado" tableStyleClass="tableOfContents" emptyMessage="Nenhum registro encontrado." 
+		paginator="true"  paginatorAlwaysVisible="no" paginatorPosition="bottom">
+		
+		<p:column style="width:20%" styleClass="tableTitle" headerText="Função">
+			<p:outputLabel value="#{resultado.pessoasFuncao.descricao}" styleClass="tableOfContents"/>
+		</p:column>
+		<p:column style="width:20%" styleClass="tableTitle" headerText="Área">
+			<p:outputLabel value="#{resultado.area.descricao}" styleClass="tableOfContents"/>
+		</p:column>
+		<p:column style="width:30%" styleClass="tableTitle" headerText="Departamento" >
+			<p:outputLabel value="#{resultado.departamentos.descricao}" styleClass="tableOfContents"/>
+		</p:column>
+		<p:column style="width:15%" styleClass="tableTitle" headerText="Início" >
+			<p:outputLabel value="#{resultado.dataInicio}" styleClass="tableOfContents">
+				<f:convertDateTime pattern="dd/MM/yyyy"/> 		 
+			</p:outputLabel>
+		</p:column>
+		<p:column style="width:15%" styleClass="tableTitle" headerText="Fim" >
+			<p:outputLabel value="#{resultado.dataFinal}" styleClass="tableOfContents" rendered="#{resultado.dataFinal != null}">
+				<f:convertDateTime pattern="dd/MM/yyyy"/> 		 
+			</p:outputLabel>
+		</p:column>
+		<p:column style="width:10%" styleClass="tableTitle" headerText="Ação">
+				<p:commandLink action="#{pessoasCadastroMB.removeFuncoes()}" title="Remove funcao" 
+				                 styleClass="ui-icon ui-icon-closethick" update="dtGridPessFuncao">
+					    <f:setPropertyActionListener  value="#{resultado}"
+	            		                              target="#{pessoasCadastroMB.pDadosFuncaoSelected}"/>         
+	     		</p:commandLink>
+		</p:column>							
+	</p:dataTable>
+	
+	<p:spacer height="10px" />
+	<p:separator />
+	<p:spacer height="10px" />
+
+	<p:outputPanel id="opVeiculos">
+		<table>
+			<tr>
+				<td style="width: 90px"><h:outputLabel value="Veículo Marca:" styleClass="campoLabelBold" /></td>
+				<td>
+					<p:inputText value="#{pessoasCadastroMB.marca}"  styleClass="campoInput" style="width: 100px" maxlength="10"/>
+				</td>
+				<td><h:outputLabel value="Modelo:" styleClass="campoLabelBold" /></td>
+				<td>
+					<p:inputText value="#{pessoasCadastroMB.modelo}" styleClass="campoInput" style="width: 100px" maxlength="10"/>
+				</td>
+				<td>
+					<h:outputLabel value="Cor:" styleClass="campoLabelBold" />
+				</td>
+				<td>
+					<p:inputText value="#{pessoasCadastroMB.cor}" styleClass="campoInput" style="width: 60px" maxlength="10"/>
+				</td>
+				<td><h:outputLabel value="Placa:" styleClass="campoLabelBold" /></td>
+				<td>
+					<p:inputText value="#{pessoasCadastroMB.placa}" styleClass="campoInput" style="width: 60px" maxlength="10"/>
+				</td>
+				<td>
+					<p:commandButton action="#{pessoasCadastroMB.addVeiculos()}"
+						             value="Adicionar veículo" styleClass="botaoPadrao"
+						             update="opVeiculos,dtVeiculos" />
+				</td>
+			</tr>
+		</table>
+	</p:outputPanel>
+	<p:dataTable id="dtVeiculos" value="#{pessoasCadastroMB.pessoas.pessoasDados.listaVeiculos}" rows="4" 
+		style="width: 700px" var="resultado" tableStyleClass="tableOfContents" emptyMessage="Nenhum registro encontrado." >
+		
+		<p:column style="width:40%" styleClass="tableTitle" headerText="Veículo Marca">
+			<p:outputLabel value="#{resultado.marca}" styleClass="tableOfContents"/>
+		</p:column>
+		<p:column style="width:30%" styleClass="tableTitle" headerText="Modelo">
+			<p:outputLabel value="#{resultado.modelo}" styleClass="tableOfContents"/>
+		</p:column>
+				<p:column style="width:10%" styleClass="tableTitle" headerText="Cor">
+			<p:outputLabel value="#{resultado.cor}" styleClass="tableOfContents"/>
+		</p:column>
+				<p:column style="width:10%" styleClass="tableTitle" headerText="Placa">
+			<p:outputLabel value="#{resultado.placa}" styleClass="tableOfContents"/>
+		</p:column>
+		<p:column style="width:10px" styleClass="tableTitle" headerText="Ação">
+				<p:commandLink action="#{pessoasCadastroMB.removeVeiculos}" title="Remove veículo" 
+				                 styleClass="ui-icon ui-icon-closethick" update="dtVeiculos">
+					    <f:setPropertyActionListener  value="#{resultado}"
+	            		                              target="#{pessoasCadastroMB.pDadosVeiculoselected}"/>         
+	             </p:commandLink>
+		</p:column>							
+	</p:dataTable>
+
+</ui:fragment>

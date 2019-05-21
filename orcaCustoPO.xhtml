@@ -1,0 +1,389 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui" >
+
+	 <h:head>
+		
+        <style type="text/css">
+            .cab {
+                background-color: #FFFF00 !important;
+                background-image: none !important;
+                color: #000000 !important;
+            }
+            .cab1 {
+                background-color: #FFA500 !important;
+                background-image: none !important;
+                color: #000000 !important;
+            }  
+            .cabTotal {
+                background-color: #FF6347 !important;
+                background-image: none !important;
+                color: #000000 !important;
+            }                      
+        </style>
+	 </h:head>
+
+<h:body >
+ <h:form id="formPO">
+ 
+ 	<p:panel id="pPO" header="Planejamento Orçamentario" style="width:100%;">
+ 	
+ 		<table>
+ 			<tr>
+ 				<td style="width:10%;">
+ 					<h:outputLabel value="Ano: " 
+	          			           style="font-size: 10px; font-weight: bold"/>
+ 				</td>
+ 				<td style="width:40%;">
+ 					<h:selectOneMenu id="selectPOAno" value="#{orcaCustoPOMB.anoEsc}" 
+                                		 	                 style="width: 50px; height: 26px; font-size: 10px; text-align:left">
+						  <!-- Provisorio -->	
+						  <f:selectItems value="#{orcaCustoPOMB.selectAnos}"/>
+                          <p:ajax event="change" listener="#{orcaCustoPOMB.getCampos}" oncomplete="onCellEdit()"/>    
+                                		 		
+                    </h:selectOneMenu>
+ 				</td> 				
+ 				<td style="width:10%;">
+ 					<h:outputLabel value="Conta: " 
+	          			           style="font-size: 10px; font-weight: bold"/>
+ 				</td>
+ 				<td style="width:40%;">
+                    <p:autoComplete id="acPlanoConta" minQueryLength="1" forceSelection="true"  
+                  				value="#{orcaCustoPOMB.planoContaSeleted}" effect="fade"  
+                  				var="pContas" itemLabel="#{pContas.descricao}" itemValue="#{pContas}" 
+                  				completeMethod="#{orcaCustoPlanoContas.completeConta}" converter="planoContasConverter"
+                  				styleClass="campoInput" size="60">
+                  			
+                	<p:column>
+                  			#{pContas.descricao}
+              			</p:column>		
+                 </p:autoComplete>	
+
+ 				</td> 				
+ 			</tr> 		
+ 			
+			<tr>
+			
+ 				<td>
+ 					<h:outputLabel value="Area: " 
+	          			           style="font-size: 10px; font-weight: bold"/>
+ 				</td>
+ 				<td>
+  					<h:selectOneMenu id="selectPOArea" value="#{orcaCustoPOMB.idArea}" 
+                                	 style="width: 300px; font-size: 10px; text-align:left">
+						  <f:selectItems value="#{orcaCustoPOMB.selectArea}"/>
+                          <f:ajax event="change" listener="#{orcaCustoPOMB.carregarDepto}" render="selectPODepartamento"/>  
+                                		 		
+                    </h:selectOneMenu>				
+ 				</td> 	
+ 				
+ 				<td>
+ 					<h:outputLabel value="Departamento: " 
+	          			           style="font-size: 10px; font-weight: bold"/>
+ 				</td>
+ 				<td>
+  					<h:selectOneMenu id="selectPODepartamento" value="#{orcaCustoPOMB.idDepartamento}" 
+                                		 	                 style="width: 300px; font-size: 10px; text-align:left">
+						  <f:selectItems value="#{orcaCustoPOMB.selectDepartamentos}"/>
+                          <f:ajax event="change" listener="#{orcaCustoPOMB.carregarCC}" render="selectPOCC"/>   
+                                		 		
+                    </h:selectOneMenu>				
+ 				</td> 		
+ 				
+ 				 							
+ 			</tr> 
+			<tr>
+			
+ 				<td>
+ 					<h:outputLabel value="Centro Custo: " 
+	          			           style="font-size: 10px; font-weight: bold"/>
+ 				</td>
+ 				<td>
+  					<h:selectOneMenu id="selectPOCC" value="#{orcaCustoPOMB.idCentroCusto}" 
+                                	 style="width: 300px; font-size: 10px; text-align:left">
+						  <f:selectItems value="#{orcaCustoPOMB.selectCC}"/>
+                    </h:selectOneMenu>	
+ 				</td> 
+ 							
+ 				<td>
+ 					<h:outputLabel value="Valor: " 
+	          			           style="font-size: 10px; font-weight: bold"/>
+ 				</td>
+ 				<td>
+ 					<h:inputText value="#{orcaCustoPOMB.valorPO}"       
+		    		 	             style="font-size: 10px; text-align:right;" size="20"/>
+		    		 	             
+ 				</td> 	
+						
+ 				 				
+ 			</tr>  	
+ 			
+			<tr>
+ 				<td colspan="4">		    		 	             
+        			<p:commandLink action="#{orcaCustoPOMB.adicionarPO()}"  title="Incluir PO"
+        			               update=":conteudoOrcaCusto:formPO:listaPO,:conteudoOrcaCusto:formPO:mensaTelaPO" styleClass="ui-icon ui-icon-circle-plus"/>		    		 	             
+ 				</td> 	
+ 			</tr>  			
+		
+ 		</table>	
+
+	   <p:contextMenu for="listaPO" widgetVar="cMenu">   
+	        <p:menuitem value="Edit Cell" icon="ui-icon-search" onclick="PF('poTable').showCellEditor();return false;"/>  
+	        <p:menuitem value="Hide Menu" icon="ui-icon-close" onclick="PF('cMenu').hide()"/>  
+	    </p:contextMenu>  				
+			<div style="height: 300px; width: 100%; overflow: auto">
+			
+			<p:dataTable id="listaPO" var="po" value="#{orcaCustoPOMB.listaPO}" editMode="cell" editable="true"
+					     tableStyle="font-size: 10px; table-layout:auto; width:1700px;" emptyMessage="Sem registros" 
+					     widgetVar="poTable" >
+
+				<p:ajax event="cellEdit" listener="#{orcaCustoPOMB.recalcularValorPO}"  onstart="PF('modalProcessar').show();" oncomplete="onCellEdit()" />
+	
+							
+			        <p:columnGroup type="header">
+			            <p:row>
+			            	<p:column headerText="Ações" />
+			            	<p:column headerText="Ano" />	
+			            	<p:column headerText="Area" />	                
+			                <p:column headerText="Departamento" />
+			                <p:column headerText="Centro de custo" />
+			                <p:column headerText="Plano de conta" />
+			                <p:column headerText="Janeiro" styleClass="cab"/>
+			                <p:column headerText="Fevereiro" styleClass="cab1"/>
+			                <p:column headerText="Março" styleClass="cab"/>
+			                <p:column headerText="Abril" styleClass="cab1"/>
+			                <p:column headerText="Maio" styleClass="cab"/>
+			                <p:column headerText="Junho" styleClass="cab1"/>
+			                <p:column headerText="Julho" styleClass="cab"/>
+			                <p:column headerText="Agosto" styleClass="cab1"/>
+			                <p:column headerText="Setembro" styleClass="cab"/>
+			                <p:column headerText="Outubro" styleClass="cab1"/>
+			                <p:column headerText="Novembro" styleClass="cab"/>
+			                <p:column headerText="Dezembro" styleClass="cab1"/>
+			                <p:column headerText="Total" styleClass="cabTotal"/>
+			            </p:row>
+			        </p:columnGroup>
+
+
+					<p:column>
+        				<p:commandLink action="#{orcaCustoPOMB.removeLinhaPO}"  title="Excluir PO" 
+        			           		   oncomplete="onCellEdit()" styleClass="ui-icon ui-icon-closethick" >	
+		            		    <f:setPropertyActionListener  value="#{po}"
+		            		                                  target="#{orcaCustoPOMB.poLinhaSelected}"/>        			           		   
+        			    </p:commandLink>       		   
+					</p:column>
+                   
+					<p:column>
+						<h:outputText value="#{po.ano}" />
+					</p:column> 							
+
+					<p:column>
+						<h:outputText value="#{po.area.descricao}" />
+					</p:column>
+				
+					<p:column>
+						<h:outputText value="#{po.departamento.descricao}" />
+					</p:column>
+					
+					<p:column>
+						<h:outputText value="#{po.centroCusto.descricao}" />
+					</p:column>
+					
+					<p:column>
+						<h:outputText value="#{po.planoConta.descricao}" />
+					</p:column> 	
+							
+					<p:column id="cValorJanOrc"  style="text-align:right; width:50px" >				 							
+						<p:cellEditor>
+						 <f:facet name="output">
+						 	<h:outputText  value="#{po.valorJanOrc}"  size="6" 
+						 	             style="#{po.fixoJanOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						 </f:facet>
+						<f:facet name="input">
+							<p:inputText id="valorJanOrc" value="#{po.valorJanOrc}" size="6"  onselect="setarQualValorPO([{name:'mes',value:'ORC_JAN'}])"
+							             style="#{po.fixoJanOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}">
+
+						 	</p:inputText>
+						</f:facet>	
+						</p:cellEditor>
+						
+					</p:column> 
+
+					
+					<p:column  style="text-align:right; width:50px">		
+							<p:cellEditor>
+							<f:facet name="output">
+							 	<h:outputText value="#{po.valorFevOrc}" size="6" 
+							 	             style="#{po.fixoFevOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						 </f:facet>
+							<f:facet name="input">
+							<p:inputText id="valorFevOrc" value="#{po.valorFevOrc}" size="6" onselect="setarQualValorPO([{name:'mes',value:'ORC_FEV'}])"
+							 	         style="#{po.fixoFevOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						</f:facet>	
+						</p:cellEditor> 
+					</p:column>
+												
+						
+					<p:column  style="text-align:right; width:50px">		
+							<p:cellEditor>
+							<f:facet name="output">
+							 	<h:outputText value="#{po.valorMarOrc}" size="6" 
+							 	             style="#{po.fixoMarOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						    </f:facet>
+							<f:facet name="input">
+							<p:inputText id="valorMarOrc" value="#{po.valorMarOrc}" size="6" onselect="setarQualValorPO([{name:'mes',value:'ORC_MAR'}])" 
+							 	         style="#{po.fixoMarOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						</f:facet>	
+						</p:cellEditor>   							
+					</p:column> 
+
+					<p:column  style="text-align:right; width:50px">		
+							<p:cellEditor>
+							<f:facet name="output">
+							 	<h:outputText value="#{po.valorAbrOrc}" size="6" 
+							 	             style="#{po.fixoAbrOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						    </f:facet>
+							<f:facet name="input">
+							<p:inputText id="valorAbrOrc" value="#{po.valorAbrOrc}" size="6" onselect="setarQualValorPO([{name:'mes',value:'ORC_ABR'}])" 
+							 	         style="#{po.fixoAbrOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						</f:facet>	
+						</p:cellEditor>    
+					</p:column> 
+  							
+					
+					<p:column  style="text-align:right; width:50px">		
+							<p:cellEditor>
+							<f:facet name="output">
+							 	<h:outputText value="#{po.valorMaiOrc}" size="6" 
+							 	             style="#{po.fixoMaiOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						    </f:facet>	
+							<f:facet name="input">
+							<p:inputText id="valorMaiOrc" value="#{po.valorMaiOrc}" size="6" onselect="setarQualValorPO([{name:'mes',value:'ORC_MAI'}])" 
+							 	         style="#{po.fixoMaiOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						</f:facet>	
+						</p:cellEditor>    
+					</p:column> 
+						
+					<p:column  style="text-align:right; width:50px">		
+							<p:cellEditor>
+							<f:facet name="output">
+							 	<h:outputText value="#{po.valorJunOrc}" size="6" 
+							 	             style="#{po.fixoJunOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						    </f:facet>		
+							<f:facet name="input">
+							<p:inputText id="valorJunOrc" value="#{po.valorJunOrc}" size="6" onselect="setarQualValorPO([{name:'mes',value:'ORC_JUN'}])" 
+							 	         style="#{po.fixoJunOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						</f:facet>	
+						</p:cellEditor>    
+					</p:column> 
+
+					<p:column  style="text-align:right; width:50px">		
+							<p:cellEditor>
+							<f:facet name="output">
+							 	<h:outputText value="#{po.valorJulOrc}" size="6" 
+							 	             style="#{po.fixoJulOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						    </f:facet>		
+							<f:facet name="input">
+							<p:inputText id="valorJulOrc" value="#{po.valorJulOrc}" size="6" onselect="setarQualValorPO([{name:'mes',value:'ORC_JUL'}])" 
+							 	         style="#{po.fixoJulOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						</f:facet>	
+						</p:cellEditor>    
+					</p:column> 
+						
+					<p:column  style="text-align:right; width:50px">		
+							<p:cellEditor>
+							<f:facet name="output">
+							 	<h:outputText value="#{po.valorAgoOrc}" size="6" 
+							 	             style="#{po.fixoAgoOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						    </f:facet>							
+							<f:facet name="input">
+							<p:inputText id="valorAgoOrc" value="#{po.valorAgoOrc}" size="6" onselect="setarQualValorPO([{name:'mes',value:'ORC_AGO'}])" 
+							 	         style="#{po.fixoAgoOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						</f:facet>	
+						</p:cellEditor>     
+					</p:column> 
+					
+					<p:column  style="text-align:right; width:50px">		
+							<p:cellEditor>
+							<f:facet name="output">
+							 	<h:outputText value="#{po.valorSetOrc}" size="6" 
+							 	             style="#{po.fixoSetOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						    </f:facet>				
+							<f:facet name="input">
+							<p:inputText id="valorSetOrc" value="#{po.valorSetOrc}" size="6" onselect="setarQualValorPO([{name:'mes',value:'ORC_SET'}])"
+							 	         style="#{po.fixoSetOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						</f:facet>	
+						</p:cellEditor>   
+					</p:column> 
+				
+					<p:column  style="text-align:right; width:50px">		
+						<p:cellEditor>
+							<f:facet name="output">
+							 	<h:outputText value="#{po.valorOutOrc}" size="6" 
+							 	             style="#{po.fixoOutOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						    </f:facet>			
+							<f:facet name="input">
+								<p:inputText id="valorOutOrc" value="#{po.valorOutOrc}" size="6" onselect="setarQualValorPO([{name:'mes',value:'ORC_OUT'}])"
+								 	         style="#{po.fixoOutOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+							</f:facet>	
+						</p:cellEditor>   
+					</p:column> 
+											 					  							
+					<p:column  style="text-align:right; width:50px">		
+							<p:cellEditor>
+							<f:facet name="output">
+							 	<h:outputText value="#{po.valorNovOrc}" size="6" 
+							 	             style="#{po.fixoNovOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						    </f:facet>								
+							<f:facet name="input">
+							<p:inputText id="valorNovOrc" value="#{po.valorNovOrc}" size="6" onselect="setarQualValorPO([{name:'mes',value:'ORC_NOV'}])"
+								 	     style="#{po.fixoNovOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						</f:facet>	
+						</p:cellEditor>    
+					</p:column> 
+
+					<p:column  style="text-align:right; width:50px">		
+							<p:cellEditor>
+							<f:facet name="output">
+							 	<h:outputText value="#{po.valorDezOrc}" size="6" 
+							 	             style="#{po.fixoDezOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						    </f:facet>								
+							<f:facet name="input">
+							<p:inputText id="valorDezOrc" value="#{po.valorDezOrc}" size="6" onselect="setarQualValorPO([{name:'mes',value:'ORC_DEZ'}])"
+								 	     style="#{po.fixoDezOrc == 1 ? 'text-align:right;color: red;' : 'text-align:right;color: black;'}"/>
+						</f:facet>	
+						</p:cellEditor>    
+					</p:column> 
+ 							
+					<p:column  style="text-align:right; width:60px">		
+						#{po.valorOrc}
+					</p:column> 
+		
+					
+			        <f:facet name="footer">
+			           <h:outputLabel value="Em destaque em vermelho é os valores colocado pelo usuário. " styleClass="campoObrigatorio" /> 
+			        </f:facet>
+		
+			</p:dataTable>
+
+			 </div>
+ 
+	 	<p:commandButton id="cadAreaDeptoNovo" action="#{orcaCustoPOMB.setOpcao()}" 
+	      		       icon="ui-icon-arrowthicksto-1-w" title="Novo" process=":conteudoOrcaCusto:formPO" update=":conteudoOrcaCusto:formPO:pPO" />
+		<p:commandButton id="cadAreaDeptoSalvar" action="#{orcaCustoPOMB.salvarLinhaPO()}" onclick="PF('modalProcessar').show();" oncomplete="PF('modalProcessar').hide();"
+	      		       icon="ui-icon-disk" title="Salvar" process=":conteudoOrcaCusto:formPO" update=":conteudoOrcaCusto:formPO:pPO,:conteudoOrcaCusto:formPO:listaPO" />      		       	
+		<h:outputLabel id="mensaTelaPO" value="#{orcaCustoPOMB.mensaTela}" styleClass="campoObrigatorio" />
+   	 
+ 	</p:panel>
+
+ </h:form>
+  <p:remoteCommand name="onCellEdit" update=":conteudoOrcaCusto:formPO:listaPO,:conteudoOrcaCusto:formPO:mensaTelaPO" oncomplete="PF('modalProcessar').hide();"/> 
+  <p:remoteCommand name="setarQualValorPO" action="#{orcaCustoPOMB.setarQualValorPO}"/> 
+  <p:remoteCommand name="js_MKT_PO_DESPESA" action="#{orcaCustoPOMB.getCampos}" autoRun="true" update=":conteudoOrcaCusto:formPO:listaPO"/>	
+  
+</h:body>   
+
+</html>      

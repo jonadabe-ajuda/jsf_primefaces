@@ -1,0 +1,209 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h="http://java.sun.com/jsf/html"
+	 xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:p="http://primefaces.org/ui">
+     
+	<table>
+		<tr>
+			<td style="width: 120px"><h:outputLabel value="Data de Admissão:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:calendar value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.admissaoData}"  showButtonPanel="true"
+							style="font-size: 10px;" size="10" pattern="dd/MM/yyyy" 
+							showOn="button"/>
+			</td>
+			<td><h:outputLabel value="Dias Experiência:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.diasExperiencia}" styleClass="campoInput" style="width: 30px"
+				             maxlength="5" onkeypress="validateInput('[0-9]*')"/>
+			</td>
+			<td><h:outputLabel value="Dias Prorrogar:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.diasProrrogar}" styleClass="campoInput" style="width: 30px"
+				             maxlength="5" onkeypress="validateInput('[0-9]*')"/>
+			</td>
+			<td><h:outputLabel value="Data de Demissão:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:calendar value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.demissaoData}"  showButtonPanel="true"
+							style="font-size: 10px;" size="10" pattern="dd/MM/yyyy" 
+							showOn="button"/>
+			</td>
+			<td><h:outputLabel value="Causa:" styleClass="campoLabelBold" /></td>
+			<td><p:selectOneMenu id="boxCausa" value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.demissaoCausa}" style="width: 250px" styleClass="selectOneMenu">
+					 <f:selectItem itemLabel="Selecione" itemValue="0"/>
+					 <f:selectItem itemLabel="Funcionário Ativo" itemValue="1"/>
+					 <f:selectItem itemLabel="Demissão com Justa Causa" itemValue="2" />
+					 <f:selectItem itemLabel="Demissão sem Justa Causa" itemValue="3" />
+					 <f:selectItem itemLabel="Rescisão por Força Maior" itemValue="4" />
+					 <f:selectItem itemLabel="Pedido de Demissão" itemValue="5" />
+					 <f:selectItem itemLabel="Transferência sem ônus" itemValue="6" />
+					 <f:selectItem itemLabel="Aposentadoria - com Rescisão" itemValue="7" />
+					 <f:selectItem itemLabel="Falecimento" itemValue="8" />
+					 <f:selectItem itemLabel="Outras Causas de Demissão" itemValue="9" />
+					 <f:selectItem itemLabel="Término do Contrato de Trabalho" itemValue="10" />
+					 <f:selectItem itemLabel="Pedido de Demissão com Justa Causa" itemValue="11" />
+					 <f:selectItem itemLabel="Transferência com ônus" itemValue="12" />
+					 <f:selectItem itemLabel="Mudança de Regime Trabalhista" itemValue="13" />
+					 <f:selectItem itemLabel="Falecimento Decorrente de Acidente" itemValue="14" />
+					 <f:selectItem itemLabel="Falecimento Decorrente de Doença" itemValue="15" />
+					 <f:selectItem itemLabel="Aposenta por Tempo - sem Rescisão" itemValue="16" />
+					 <f:selectItem itemLabel="Aposenta por Idade - com Rescisão" itemValue="17" />
+					 <f:selectItem itemLabel="Aposentadoria por Invalidez - Acidente" itemValue="18" />
+					 <f:selectItem itemLabel="Aposentadoria por Invalidez - Doença" itemValue="19" />
+					 <f:selectItem itemLabel="Aposentadoria Compulsória" itemValue="20" />
+					 <f:selectItem itemLabel="Aposentadoria por Invalidez - Outros" itemValue="21" />
+					 <f:selectItem itemLabel="Aposentadoria por Idade - sem Rescisão" itemValue="22" />
+					 <f:selectItem itemLabel="Rescisão Determinada pela Justiça" itemValue="23" />
+					 <f:selectItem itemLabel="Aposentadoria Especial" itemValue="24" />
+				</p:selectOneMenu>
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr><td style="width: 120px"><h:outputLabel value="Data Transferência:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:calendar  showButtonPanel="true"
+							style="font-size: 10px;" size="10" pattern="dd/MM/yyyy" 
+							showOn="button"/>			
+			</td>
+			<td><h:outputLabel value="Empresa Origem:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.empresaOrigem}" styleClass="campoInput" style="width: 220px"
+				             maxlength="100"/>
+			</td>
+			<td><h:outputLabel value="Funcionário Origem:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.empresaOrigem}" styleClass="campoInput" style="width: 220px"
+				             maxlength="100"/>
+			</td>
+			<td><h:outputLabel value="Núm. Benef. Aposentado:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.numBenefAposentado}" styleClass="campoInput" style="width: 50px"
+				             maxlength="2" onkeypress="validateInput('[0-9]*')"/>
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td style="width: 120px"><h:outputLabel value="Data Início Aquisitivo:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:calendar value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.aquisitivoData}"  showButtonPanel="true"
+							style="font-size: 10px;" size="10" pattern="dd/MM/yyyy" 
+							showOn="button"/>
+			</td>				
+			<td><h:outputLabel value="Dias Pend. Aquisitivo:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.aquisitivoDias}" styleClass="campoInput" style="width: 50px"
+				             maxlength="5" onkeypress="validateInput('[0-9]*')"/>
+			</td>
+			<td><h:outputLabel value="Validade Exame:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:calendar value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.exameValidade}"  showButtonPanel="true"
+							style="font-size: 10px;" size="10" pattern="dd/MM/yyyy" 
+							showOn="button"/>			
+			</td>
+		</tr>
+	</table>
+	<p:separator />
+	<table>
+		<tr>
+			<td><h:outputLabel value="Sindicato:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:selectOneMenu id="boxSindicato" value="#{pessoasCadastroMB.pessoas.pessoasDados.idPessoasSindicato}" style="width: 520px" styleClass="selectOneMenu">
+					 <f:selectItem itemLabel="Selecione" itemValue="0"/>
+					 <f:selectItems value="#{tabelasComumMB.selectSindicatos}"/>
+					 <p:ajax event="change" update="boxSindicato"/>
+				</p:selectOneMenu>
+			</td>
+			<td>
+				<p:commandButton immediate="true" icon="ui-icon-plus" styleClass="botaoPadrao" onclick="PF('dlCadSind').show()" title="Cadastrar Sindicato"/>
+				<p:commandButton action="#{pessoasCadastroMB.remSindicato}" update=":conteudoCadastros:formCadPessoas:pCadPes" 
+				                 immediate="true" icon="ui-icon-minus" styleClass="botaoPadrao" title="Excluir Sindicato selecionado" />				
+			</td>			
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td>
+				<p:selectBooleanCheckbox value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.contrSinDesconto}" />
+			</td>
+			<td style="width: 233px"><h:outputLabel value="Desconto Contribuição Sindical" styleClass="campoLabelBold" /></td>
+			<td><h:outputLabel value="Tributação Sindical (Ano da Admissão):" styleClass="campoLabelBold" /></td>
+			<td style="width: 170px">
+				<p:selectOneMenu id="boxContrSind" value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.contrSinTributo}"  style="width: 200px" styleClass="selectOneMenu">
+					<f:selectItem itemLabel="Selecione" itemValue="0" />
+					<f:selectItem itemLabel="Já contribuiu esse ano" itemValue="1" />
+					<f:selectItem itemLabel="Descontar sindical na admissão" itemValue="2" />
+					<f:selectItem itemLabel="Descontar sindical no mês subsequente a admissão" itemValue="3" />
+					<f:selectItem itemLabel="Não desconta sindical" itemValue="3" />
+				</p:selectOneMenu>
+			</td>
+			<td>
+				<p:selectBooleanCheckbox  />
+			</td>
+			<td><h:outputLabel value="Desconto Contribuição Assistencial" styleClass="campoLabelBold" /></td>
+		</tr>
+	</table>
+	<p:separator />
+	<table>
+		<tr>
+			<td><h:outputLabel value="FGTS Mês Inicial:" styleClass="campoLabelBold" /></td>
+			<td style="width: 65px">
+				<p:inputMask value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.fgtsMesInicial}" mask="99/9999" styleClass="campoInput" 
+					         size="9"  />
+			</td>
+			<td><h:outputLabel value="Saldo FGTS:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.fgtsSaldo}" styleClass="campoInput" size="20"
+				             maxlength="13" onkeypress="validateInput('[0-9]*')"/>
+			</td>
+			<td><h:outputLabel value="Conta FGTS:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.fgtsConta}" styleClass="campoInput" size="20"
+				             maxlength="50"/>
+			</td>
+			<td><h:outputLabel value="Data Opção:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:calendar value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.fgtsDataOpcao}"  showButtonPanel="true"
+							style="font-size: 10px;" size="10" pattern="dd/MM/yyyy" 
+							showOn="button"/>
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td><h:outputLabel value="Ocorrência para o FGTS:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:selectOneMenu id="boxOcorrFGTS" value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.fgtsOcorenciaID}"	style="width: 442px" styleClass="selectOneMenu">
+					 <f:selectItem itemLabel="Selecione" itemValue="0"/>
+					 <f:selectItems value="#{tabelasComumMB.selectFgtsOcor}"/>
+					 <p:ajax event="change" update="boxOcorrFGTS"/>
+				</p:selectOneMenu>
+			</td>
+			<td>
+				<p:commandButton immediate="true" icon="ui-icon-plus" styleClass="botaoPadrao" onclick="PF('dlCadFgtsOcor').show()" title="Cadastrar Ocorrência"/>
+				<p:commandButton action="#{pessoasCadastroMB.remFgtsOcor}" update=":conteudoCadastros:formCadPessoas:pCadPes" 
+				                 immediate="true" icon="ui-icon-minus" styleClass="botaoPadrao" title="Excluir Ocorrência selecionada"/>				
+			</td>			
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td><h:outputLabel value="Registro:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.fgtsRegistro}" styleClass="campoInput" style="width: 80px"
+				             maxlength="20"/>
+			</td>
+			<td><h:outputLabel value="Fls. / Ficha:" styleClass="campoLabelBold" /></td>
+			<td>
+				<p:inputText value="#{pessoasCadastroMB.pessoas.pessoasDadosEmpresa.fgtsFicha}" styleClass="campoInput" style="width: 80px"
+				             maxlength="20"/>
+			</td>
+		</tr>
+	</table>
+	
+	<p:separator />
+	
+	
+	
+</ui:fragment>

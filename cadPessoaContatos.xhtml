@@ -1,0 +1,146 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h="http://java.sun.com/jsf/html"
+	 xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:p="http://primefaces.org/ui">
+	
+		<p:panel id="pCadPesCont" style="width:100%">
+			<table>
+				<tr>
+					<td style="width: 80px">
+						<h:outputLabel value="Contato:" styleClass="campoLabelBold" 
+						               rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}"/>
+					</td>
+					<td>
+						<p:inputText value="#{pessoasCadastroMB.pessoasContato.nome}" styleClass="campoInput" size="50"
+						             rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}"/>
+					</td>
+					<td>
+						<h:outputLabel value="Cargo:" styleClass="campoLabelBold" 
+						               rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}"/>
+						</td>
+					<td>
+						<p:inputText value="#{pessoasCadastroMB.pessoasContato.descricaoCargo}" styleClass="campoInput" size="30" 
+						             rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}"/>
+					</td>
+				</tr>
+			</table>
+
+			<table>
+				<tr>
+					<td style="width: 80px"><h:outputLabel value="Emails" styleClass="campoLabelBold" /></td>
+					<td><p:inputText value="#{pessoasCadastroMB.pessoasContato.emailPrincipal}" styleClass="campoInput" size="50" maxlength="60"/></td>
+					<td><p:inputText value="#{pessoasCadastroMB.pessoasContato.emailSecundario}" styleClass="campoInput" size="50" maxlength="60"/></td>
+				</tr>
+			</table>
+
+			<table>
+				<tr>
+					<td style="width: 80px"><h:outputLabel value="Telefones:" styleClass="campoLabelBold" /></td>
+					<td><p:selectOneMenu id="boxTpTelefone1" value="#{pessoasCadastroMB.pessoasContato.tel1Tipo}" 
+						style="width: 50px" styleClass="selectOneMenu">
+							<f:selectItem itemLabel="-SEL-" itemValue="0" />
+							<f:selectItem itemLabel="COM." itemValue="T" />
+							<f:selectItem itemLabel="CEL." itemValue="C" />
+							<f:selectItem itemLabel="RES." itemValue="B" />
+						</p:selectOneMenu></td>
+					<td><p:inputText value="#{pessoasCadastroMB.pessoasContato.tel1DDI}" styleClass="campoInput" onkeypress="validateInput('[0-9]*')" size="3" maxlength="3"/></td>
+					<td><p:inputText value="#{pessoasCadastroMB.pessoasContato.tel1DDD}" styleClass="campoInput" onkeypress="validateInput('[0-9]*')" size="3" maxlength="3"/></td>
+					<td><p:inputText value="#{pessoasCadastroMB.pessoasContato.tel1Numero}" styleClass="campoInput" onkeypress="validateInput('[0-9]*')" size="10" maxlength="10"/></td>
+
+					<td><p:selectOneMenu id="boxTpTelefone2" value="#{pessoasCadastroMB.pessoasContato.tel2Tipo}" 
+						style="width: 50px" styleClass="selectOneMenu">
+							<f:selectItem itemLabel="-SEL-" itemValue="0" />
+							<f:selectItem itemLabel="COM." itemValue="T" />
+							<f:selectItem itemLabel="CEL." itemValue="C" />
+							<f:selectItem itemLabel="RES." itemValue="B" />
+						</p:selectOneMenu></td>
+					<td><p:inputText value="#{pessoasCadastroMB.pessoasContato.tel2DDI}" styleClass="campoInput" onkeypress="validateInput('[0-9]*')" size="3"  maxlength="3"/></td>
+					<td><p:inputText value="#{pessoasCadastroMB.pessoasContato.tel2DDD}" styleClass="campoInput" onkeypress="validateInput('[0-9]*')" size="3"  maxlength="3"/></td>
+					<td><p:inputText value="#{pessoasCadastroMB.pessoasContato.tel2Numero}" styleClass="campoInput"  onkeypress="validateInput('[0-9]*')" size="10"  maxlength="10"/></td>
+	
+					<td><p:selectOneMenu id="boxTpTelefone3" value="#{pessoasCadastroMB.pessoasContato.tel3Tipo}" 
+						style="width: 50px" styleClass="selectOneMenu">
+							<f:selectItem itemLabel="-SEL-" itemValue="0" />
+							<f:selectItem itemLabel="COM." itemValue="T" />
+							<f:selectItem itemLabel="CEL." itemValue="C" />
+							<f:selectItem itemLabel="RES." itemValue="B" />
+						</p:selectOneMenu></td>
+					<td><p:inputText value="#{pessoasCadastroMB.pessoasContato.tel3DDI}" styleClass="campoInput" onkeypress="validateInput('[0-9]*')" size="3"  maxlength="3"/></td>
+					<td><p:inputText value="#{pessoasCadastroMB.pessoasContato.tel3DDD}" styleClass="campoInput" onkeypress="validateInput('[0-9]*')" size="3"  maxlength="3"/></td>
+					<td><p:inputText value="#{pessoasCadastroMB.pessoasContato.tel3Numero}" styleClass="campoInput" onkeypress="validateInput('[0-9]*')" size="10"  maxlength="10"/></td>					
+					
+				</tr>
+			</table>
+			<table>
+				<tr>
+			  		<td width="80px">
+			  			<h:outputLabel value="Tipo:" styleClass="campoLabelBold"/>
+			  		</td>
+			  		<td>
+						<p:selectManyCheckbox id="boxPedTpPesCont" value="#{pessoasCadastroMB.listaTipoContatoSelected}"
+							                 style="width: 200px" styleClass="selectOneMenu" converter="tipoPessoaContatoConverter">
+									<f:selectItems value="#{tabelasComumMB.selectTipoPessoaContato}" var="tpPCont" itemLabel="#{tpPCont.descricao}" itemValue="#{tpPCont}"/>
+						</p:selectManyCheckbox>			            
+			  		</td>
+	  			</tr>	
+			</table>			
+
+			<table>
+				<tr>
+					<td style="width: 80px"><h:outputLabel value="" styleClass="campoLabel" /></td>
+
+					<td>
+						<p:commandButton action="#{pessoasCadastroMB.addContato}" rendered="#{pessoasCadastroMB.showTableContato}"
+						                 value="Adicionar contato" styleClass="botaoPadrao"
+						                 update="pCadPesCont" />
+						<p:commandButton action="#{pessoasCadastroMB.salvarContato}" rendered="#{!pessoasCadastroMB.showTableContato}"
+						                 value="Salvar" styleClass="botaoPadrao" process="@form"
+						                 update=":conteudoNegocios:fPedVenAddCont:pCadPesCont">
+		                	<f:setPropertyActionListener value="#{vendasMB.clienteSelected.pessoa}" target="#{pessoasCadastroMB.pessoasSelected}"/>              
+		                </p:commandButton>	
+						<p:commandButton action="#{vendasMB.addContato}" oncomplete="PF('wPedVenAddCont').hide()" rendered="#{!pessoasCadastroMB.showTableContato}"
+						                 value="Fechar" styleClass="botaoPadrao" update=":conteudoNegocios:fPedVendas:tabPedidosVendas:opContatos" process="@form">
+							<f:setPropertyActionListener value="#{pessoasCadastroMB.pessoasContato}" target="#{vendasMB.pessoasContato}"/>						                 
+						</p:commandButton>                 	
+					</td>
+				</tr>
+			</table>
+
+
+			<p:dataTable id="dtGridContatos" value="#{pessoasCadastroMB.listaPessoasContatos}" rows="10" rendered="#{pessoasCadastroMB.showTableContato}"
+				style="width: 1000px" var="resultado" tableStyleClass="tableOfContents" emptyMessage="Nenhum registro encontrado." >
+			
+				<p:column style="width:5%" styleClass="tableTitle" headerText="Contato"
+				          rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}">
+					<p:outputLabel value="#{resultado.nome}" styleClass="tableOfContents"/>
+				</p:column>
+				<p:column style="width:5%" styleClass="tableTitle" headerText="Cargos"
+				          rendered="#{pessoasCadastroMB.pessoaTipo == 'J'.charAt(0)}">
+					<p:outputLabel value="#{resultado.descricaoCargo}" styleClass="tableOfContents"/>
+				</p:column>
+				<p:column style="width:30%" styleClass="tableTitle" headerText="Telefones" >
+					<p:outputLabel value="#{resultado.descTelefones}" styleClass="tableOfContents"/>
+				</p:column>
+				<p:column style="width:20%" styleClass="tableTitle" headerText="Email" >
+					<p:outputLabel value="#{resultado.descEmails}" styleClass="tableOfContents"/>
+				</p:column>
+				<p:column style="width:30%" styleClass="tableTitle" headerText="Tipos" >
+					<p:outputLabel value="#{resultado.descTipos}" styleClass="tableOfContents"/>
+				</p:column>				
+				<p:column style="width:10%" styleClass="tableTitle" headerText="Ação">
+					<p:commandLink action="#{pessoasCadastroMB.removeContato}" title="Remove contato" 
+					                 styleClass="ui-icon ui-icon-closethick" update="dtGridContatos">
+						    <f:setPropertyActionListener  value="#{resultado}"
+		            		                              target="#{pessoasCadastroMB.pContatoSelected}"/>         
+		             </p:commandLink>
+					<p:commandLink action="#{pessoasCadastroMB.detalheContato()}" title="detalhe contato" 
+					                 styleClass="ui-icon ui-icon-zoomin" update=":conteudoCadastros:formCadPessoas:tCadPes:pCadPesCont">
+						    <f:setPropertyActionListener  value="#{resultado}"
+		            		                              target="#{pessoasCadastroMB.pessoaContatoSelected}"/> 	            		                               
+		     		</p:commandLink>		             
+				</p:column>					
+			</p:dataTable>
+			<h:outputText value="#{pessoasCadastroMB.mensaTela}" styleClass="campoObrigatorio" rendered="#{!pessoasCadastroMB.showTableContato}" />
+		</p:panel>
+</ui:fragment>

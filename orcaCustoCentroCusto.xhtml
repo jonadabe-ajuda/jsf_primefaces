@@ -1,0 +1,105 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h="http://java.sun.com/jsf/html"
+	 xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:p="http://primefaces.org/ui">
+      
+<h:body >
+ <p:outputPanel autoUpdate="true">
+  <h:form id="formCentroCusto" >  
+        
+        <p:panel id="pCentroCustoCadastro" style="border: 0px solid black;">  
+          
+          <table>
+             <tr>
+                 <td>
+                    <h:outputText value="#{orcaCustoPrincipalMB.orcaCustoTree.descricaoParentNo}"
+                                  style="font-size: 10px"/>
+					<p:inputText id="descCentroCusto" value="#{orcaCustoPrincipalMB.orcaCustoTree.descricaoNo}"
+					             rendered="#{orcaCustoPrincipalMB.showAlterar}" 
+					             style="font-size: 10px; width: 200px"/>
+
+
+         	       </td>
+
+         	       <td>
+		          	<!-- h:inputText id="orcaCustoCodigo" value="#{orcaCustoPrincipalMB.centroCustoCodigo}"  
+		          	             styleClass="campoInputCodigo" 
+		          	             rendered="#{orcaCustoPrincipalMB.showNovo}"/-->
+		
+		          	<h:inputText id="orcaCustoDescricao"  value="#{orcaCustoPrincipalMB.centroCustoDescricao}"
+		          		   styleClass="campoInputDescricao"  style="font-size: 10px; width: 150px"
+		          		   rendered="#{orcaCustoPrincipalMB.showNovo}"/>
+		          	</td>
+		          	<td>	   
+					<h:selectOneRadio id="tipoCentroCusto" value="#{orcaCustoPrincipalMB.tipoCentroCusto}"
+									  style="font-size: 10px; width: 150px"
+									  rendered="#{orcaCustoPrincipalMB.showNovo}">
+						<f:selectItem itemLabel="Sintético" itemValue="2"/>								  
+						<f:selectItem itemLabel="Analítico" itemValue="1"/>
+						
+						
+					</h:selectOneRadio>	          		   
+		          	</td>
+		          	<td>             
+		          	<p:commandButton id="iconCentroCustoAlterar" action="#{orcaCustoPrincipalMB.alterarDescTree()}"
+		            		       icon="ui-icon-check" title="Alterar" process="@this,descCentroCusto"
+		            		       rendered="#{orcaCustoPrincipalMB.showAlterar}">
+		            		       
+		            		    <f:setPropertyActionListener  value="#{orcaCustoPrincipalMB.orcaCustoTree.descricaoNo}"
+		            		                                  target="#{orcaCustoPrincipalMB.centroCustoDescricao}"/>
+		            		       
+	         		 </p:commandButton> 
+		            </td>
+		          	<td> 		       
+		          	<p:commandButton id="iconCentroCustoSalvar" action="#{orcaCustoPrincipalMB.salvarCentroCusto()}"
+		            		       icon="ui-icon-disk" title="Salvar" process="@this,orcaCustoDescricao,tipoCentroCusto"
+		            		       rendered="#{orcaCustoPrincipalMB.showNovo}"/> 	            		       
+		            </td>
+		          	<td> 		       
+		          			       
+	            	<p:commandButton id="iconCentroCustoAdicionar"  action="#{orcaCustoPrincipalMB.adicionarCentroCusto()}"
+	            		       icon="ui-icon-plus" title="Adicionar novo" process="@this,orcaCustoDescricao"
+	            		       rendered="#{orcaCustoPrincipalMB.showAdicionar}">
+		            		       
+		            		    <f:setPropertyActionListener  value="#{orcaCustoPrincipalMB.orcaCustoTree.descricaoNo}"
+		            		                                  target="#{orcaCustoPrincipalMB.orcaCustoTree.descricaoParentNo}"/>
+		            		       
+	         		 </p:commandButton>   
+	            	</td>
+		          	<td> 		       
+		          		       
+	            	<p:commandButton id="iconCentroCustoCancelar"  action="#{orcaCustoPrincipalMB.desativarCentroCusto()}"
+	            		       icon="ui-icon-trash" title="Desabilitar" process="@this,orcaCustoDescricao"
+	            		       rendered="#{orcaCustoPrincipalMB.showCancelar}"/>              		       
+         	       
+         	 	</td>          	       	       
+	   </tr>
+	   		   		   	            
+       </table>
+
+ 
+       	  
+
+		<p:tree id="tree" value="#{orcaCustoPrincipalMB.orcaCustoTree.root}" var="node"  orientation="horizontal" 
+	            selectionMode="single" selection="#{orcaCustoPrincipalMB.orcaCustoTree.selectedNode}" >
+	              
+	        <p:treeNode id="treeNode" styleClass="treeSintetico" >  
+      		  <h:outputText value="#{node.descricao}" id="lblNode" 
+      		  	style="font-size:11px; font-weight: bold; #{node.seAnalitico == 0 ? 'color: green;' : 'color: red;'}"/>  
+	        </p:treeNode>  
+	        <p:ajax event="select" listener="#{orcaCustoPrincipalMB.orcaCustoTree.onNodeSelect}" 
+	                oncomplete="js_ADM_CENTROCUSTO()" process="@this,tree"/>
+	                
+	    </p:tree>  
+	    <h:outputText value="Sintético: " style="font-weight: bold; color:green" styleClass="campoLabel"/><h:outputText value="Centro de custo para agrupamento" styleClass="campoLabel"/>
+	    <p:spacer width="10"/>
+	    <h:outputText value="Analítico: " style="font-weight: bold; color:red" styleClass="campoLabel"/><h:outputText value="Centro de custo que só pode ser vinculado" styleClass="campoLabel"/>
+</p:panel>
+   <p:remoteCommand name="js_ADM_CENTROCUSTO" action="#{orcaCustoPrincipalMB.mudarOpcaoSelecao()}" process="@this"/> 	
+                   
+  </h:form>  
+  </p:outputPanel> 
+</h:body>   
+      
+</html>      

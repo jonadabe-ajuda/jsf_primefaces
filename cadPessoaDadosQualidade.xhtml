@@ -1,0 +1,40 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h="http://java.sun.com/jsf/html"
+	 xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:p="http://primefaces.org/ui">
+
+
+			<table>
+				<tr>
+					<td style="width: 80px"><h:outputLabel value="Ctrl. de Qualid. através de:" styleClass="campoLabelBold" /></td>
+					<td><p:inputText value="#{pessoasCadastroMB}" styleClass="campoInput" /></td>
+					<td><h:outputLabel value="Especificar outro CTRL:" styleClass="campoLabelBold" /></td>
+					<td><p:inputText value="#{pessoasCadastroMB}" styleClass="campoInput" /></td>
+				</tr>
+			</table>
+
+					<p:dataTable id="dtGridQualidade" value="#{pessoasCadastroMB}" rows="10" 
+						style="width: 100%" var="resultado" tableStyleClass="tableOfContents" emptyMessage="Nenhum registro encontrado." >
+						<p:column style="width:15%" styleClass="tableTitle" headerText="Certificações que possui">
+							<p:outputLabel  styleClass="tableOfContents"/>
+						</p:column>
+						<p:column style="width:15%" styleClass="tableTitle" headerText="Data da Auditoria">
+							<p:outputLabel  styleClass="tableOfContents"/>
+						</p:column>
+						<p:column style="width:15%" styleClass="tableTitle" headerText="Validade do Certificado" >
+							<p:outputLabel  styleClass="tableOfContents"/>
+						</p:column>
+						<p:column style="width:15%" styleClass="tableTitle" headerText="Próxima Auditoria" >
+							<p:outputLabel  styleClass="tableOfContents"/>
+						</p:column>
+						<p:column style="width:15%" styleClass="tableTitle" headerText="Empresa Certirficadora" >
+							<p:outputLabel  styleClass="tableOfContents"/>
+						</p:column>
+						<p:column style="width:15%" styleClass="tableTitle" headerText="Cópia Fornecida" >
+							<p:outputLabel  styleClass="tableOfContents"/>
+						</p:column>
+					</p:dataTable>
+
+	
+</ui:fragment>

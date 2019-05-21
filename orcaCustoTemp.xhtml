@@ -1,0 +1,28 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="http://java.sun.com/jsf/facelets"
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui">
+<h:head>
+  <h:outputStylesheet library="css" name="commom.css"/>	
+  <h:outputScript  library="js" name="funcoes.js"/>
+</h:head>
+
+<h:form id="conteudoOrcaCusto" > 
+
+	<p:panel id="pConteudoOrcaCusto" style="border: 0px solid black; height: 500px; width:1000px" >
+    	<ui:insert name="conteudoDados"/>
+    </p:panel>
+    
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="explode">
+        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+     </p:confirmDialog>
+     
+	<ui:include src="../mensagens.xhtml" />
+
+	  
+</h:form>	
+
+     
+</ui:composition>

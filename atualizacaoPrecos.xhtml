@@ -1,0 +1,197 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="http://java.sun.com/jsf/facelets"
+xmlns:h="http://java.sun.com/jsf/html"
+xmlns:f="http://java.sun.com/jsf/core"
+xmlns:p="http://primefaces.org/ui">
+
+ <h:form id="fAtualizacaoPrecos">
+ 	<p:outputPanel id="opAtualizacaoPrecos">
+ 		<p:panelGrid columns="2" styleClass="panelGrid">
+			<p:panel id="pAtualizacaoPrecos" styleClass="panelGrid" style="width:450px">
+			
+				<f:facet name="header">
+					<h:outputLabel value="Tabela de preços." styleClass="campoLabelBold"/>
+				</f:facet>
+
+		       <table>
+		       	<tr>
+		       		<td width="60px">
+		       			<h:outputLabel value="Tabelas:" styleClass="campoObrigatorio"/>
+		       		</td>	          	
+		       		<td>
+		              	<h:selectOneMenu style="width: 300px; font-size: 10px; text-align:left"
+		              	                 value="#{vendasMB.tabAtualizacaoPrecosSelected}" 
+		              	                 converter="tabelaAtualizacaoPrecosConverter">
+							  <f:selectItems value="#{vendasMB.listaTabelaAtualizacaoPrecos}" 
+							                 var="tabPrecos" itemLabel="#{tabPrecos.descricao}" itemValue="#{tabPrecos}"/>
+							  <p:ajax event="change" listener="#{vendasMB.setarTabelaPrecos}" update="opAtualizacaoPrecos"/>               
+		              	</h:selectOneMenu>
+		       		</td>
+		       	</tr>
+		       </table>
+		       <table>
+			       	<tr>
+			       		<td width="60px">
+			       			<h:outputLabel value="Descrição:" styleClass="campoObrigatorio"/>
+			       		</td>
+			       		<td>
+			       			<p:inputText value="#{vendasMB.tabAtualizacaoPrecos.descricao}" styleClass="campoInput" maxlength="50" size="50"/>
+			       		</td>	          	
+			       	</tr>
+		       </table>		
+		       
+		       <table>
+			       	<tr>
+			       		<td width="60px">
+			       			<h:outputLabel value="Parâmetros:" styleClass="campoObrigatorio"/>
+			       		</td>
+			       	</tr>
+			   </table>    						
+		       
+		       <table>
+		           	<tr>
+			       		<td width="60px">
+			       			<h:outputLabel value="Descrição:" styleClass="campoObrigatorio"/>
+			       		</td>
+			       		<td>
+			       			<p:inputText value="#{vendasMB.tabAtualizacaoPrecosParametros.campoDesc}" styleClass="campoInputUpper" size="15" maxlength="20"/>
+			       		</td>
+			       		<td>
+			       			<h:outputLabel value="Porcentagem:" styleClass="campoObrigatorio"/>
+			       		</td>				       		
+			       		<td>
+					 		<p:inputText value="#{vendasMB.tabAtualizacaoPrecosParametros.campoPorcValor}" size="10"
+										 styleClass="campoInputValor" onkeypress="validateInputNumberVirgula('[0-9]*')">
+			                  	<f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+			            	</p:inputText>				       				       		
+			       		</td>
+			       		<td>
+			       		  <p:commandButton id="btAddParametro" action="#{vendasMB.addParametrosTabPrecos()}"
+						      		       icon="ui-icon-circle-plus" title="Adiconar parâmetro"  
+						      		       update="opAtualizacaoPrecos"/>  
+			       		</td>
+			       	</tr>	
+		       </table>
+
+							  <p:dataTable id="dtTabPrecoParametro" widgetVar="wdTabPrecoParametro" value="#{vendasMB.tabAtualizacaoPrecos.listaTabPrecoParametros}"  
+							                 var="item"  rows="10"  scrollable="true" scrollHeight="200" scrollRows="10" 
+							                 emptyMessage="Sem registro." tableStyle="font-size: 10px;" style="width:400px;"> 
+							  		
+							  		<f:facet name="header">
+							  			Parâmetros usado no tabela
+							  		</f:facet>
+							        <p:column headerText="Descrição" style="width:50%">  
+							            #{item.campoDesc}
+							        </p:column>  
+							        <p:column headerText="Porcentagem" style="width:40%">  
+										<h:outputText value=" #{item.campoPorcValor}">
+							                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+							            </h:outputText>	
+							        </p:column>
+							        <p:column headerText="Ação" style="width:10%">  
+							       		  <p:commandButton id="btRemParametro" action="#{vendasMB.remParametrosTabPrecos()}"
+										      		       icon="ui-icon-closethick" title="Remover parâmetro"  
+										      		       update="dtTabPrecoParametro">
+										      <f:setPropertyActionListener  value="#{item}" target="#{vendasMB.tabAtualizacaoPrecosParametrosSelected}"/>		        
+										  </p:commandButton>    		       
+							        </p:column>  
+							        
+							  		<f:facet name="footer">
+							  			<h:outputLabel value="Total (%) = " styleClass="campoLabel"/>
+							  			<h:outputLabel value="#{vendasMB.tabAtualizacaoPrecos.porcTotal}" styleClass="campoLabel">
+						                  	<f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+						            	</h:outputLabel>
+							  		</f:facet>								        
+							        								        
+							    </p:dataTable>
+					
+       		  <p:commandButton id="btSalvarTabPreco" action="#{vendasMB.saveTabelaPrecos()}"
+			      		       title="Salvar ou alterar tabela" value="Salvar ou alterar tabela"  
+			      		       update="opAtualizacaoPrecos"
+			      		       onclick="PF('modalProcessar').show()" oncomplete="PF('modalProcessar').hide()"/>	
+       		  <p:commandButton id="btRemoverTabPreco" action="#{vendasMB.remTabelasPrecos()}"
+			      		       title="Inativar tabela" value="Inativar tabela"  
+			      		       update="opAtualizacaoPrecos"
+			      		       rendered="#{vendasMB.tabAtualizacaoPrecos.IDTabelaAtualizacaoPreco != null}"
+			      		       onclick="PF('modalProcessar').show()" oncomplete="PF('modalProcessar').hide()"/>	      		       		       
+		
+			</p:panel>	
+			<p:panel id="pAtualizacaoPrecosProdutos" styleClass="panelGrid" style="width:700px">
+				
+				<f:facet name="header">
+					<h:outputLabel value="Segmento e produtos" styleClass="campoLabelBold"/>
+				</f:facet>
+		       <table>
+		        <tr>		
+		       		<td width="60px">
+		       			<h:outputLabel value="Segmentos:" styleClass="campoObrigatorio"/>
+		       		</td>	          	
+		       		<td>
+		              	<h:selectOneMenu id="boxLinhaProduto" style="width: 300px; font-size: 10px; text-align:left"
+		              	                 value="#{vendasMB.linhasProdutoSelected}" converter="linhaProdutoConverter">
+							  <f:selectItems value="#{linhasProdutoMB.selectLinhaAnaliticoSemVinculo}" 
+							                 var="linhaAnal" itemLabel="#{linhaAnal.descricao}" itemValue="#{linhaAnal}"/>
+							  <p:ajax event="change" update="boxLinhaProduto"/>               
+		              	</h:selectOneMenu>
+		       		</td>
+		       		<td>
+			       		  <p:commandButton id="btCalculoItens" action="#{vendasMB.calculoTabPrecos()}"
+						      		       title="Calcular itens" value="Calcular itens"  
+						      		       update="dtTabPrecoProdutos,mensaTela"
+						      		       onclick="PF('modalProcessar').show()" oncomplete="PF('modalProcessar').hide()"/>  		       		
+		       		</td>		       		
+		       	</tr>
+		       </table>	
+			  <p:dataTable id="dtTabPrecoProdutos" widgetVar="wdTabPrecoProdutos" value="#{vendasMB.listaProdutosAtualizacaoPrecos}"  
+			                 var="item"  rows="10"  scrollable="true" scrollHeight="320" scrollRows="10" 
+			                 emptyMessage="Sem registro." tableStyle="font-size: 10px;" style="width:650px;"> 
+			  		
+			  		<f:facet name="header">
+			  			Parâmetros usado no tabela
+			  		</f:facet>
+			        <p:column headerText="Código" style="width:15%; text-align:right;">  
+			            #{item.produto.codigo}
+			        </p:column>  
+			        <p:column headerText="Descrição" style="width:35%">  
+			            #{item.produto.descricao}
+			        </p:column>  
+			        <p:column headerText="Un." style="width:5%">  
+			            #{item.produto.unidadesProduto.codigo}
+			        </p:column>  			        			        
+			        <p:column headerText="Preço Prod." style="width:15%; text-align:right;">  
+						<h:outputText value=" #{item.produto.valorVenda}">
+							<f:convertNumber type="currency"  currencySymbol='' locale="pt_BR" pattern="#,##0.00"/>
+			            </h:outputText>	
+			        </p:column>
+			        <p:column headerText="Preço Tab.(%)" style="width:15%; text-align:right;">  
+						<h:outputText value=" #{item.valorTabela}">
+			                  <f:convertNumber locale="pt_BR" minFractionDigits="2"/>
+			            </h:outputText>	
+			        </p:column>	
+			        <p:column headerText="Preço Calc." style="width:15%; text-align:right;">  
+						<h:outputText value=" #{item.valorCalculado}">
+			                  <f:convertNumber type="currency"  currencySymbol='' locale="pt_BR" pattern="#,##0.00"/>
+			            </h:outputText>	
+			        </p:column>
+		        
+			  		<f:facet name="footer">
+			       		  <p:commandButton id="btEfetivarValTab" action="#{vendasMB.efetivarTabPrecos()}"
+						      		       title="Efetivar valores nos produtos" value="Efetivar valores nos produtos"  
+						      		       update="dtTabPrecoProdutos,:conteudoNegocios:fAtualizacaoPrecos:mensaTela"
+						      		       onclick="PF('modalProcessar').show()" oncomplete="PF('modalProcessar').hide()">
+						     <p:confirm header="Confirmation" message="Atenção, os valores de vendas dos produtos acima serão mudados, continuar?" icon="ui-icon-alert" /> 		       
+						 </p:commandButton>     		        
+			  		</f:facet>		        
+			        								        
+			    </p:dataTable>		       				
+			</p:panel>		
+		</p:panelGrid>
+		<h:outputLabel id="mensaTela" value="#{vendasMB.mensaTela}" styleClass="campoObrigatorio"/>
+ 	</p:outputPanel>			
+</h:form>
+</ui:composition>		
+    
+  	 
+   
+
+
